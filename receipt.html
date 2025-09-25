@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuda Receipt</title>
+  <style>
+    body {margin:0;padding:16px;font-family:"Segoe UI",Arial,sans-serif;background:#fff;color:#000;}
+    .header {display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+    .header img {height:50px;}
+    .header h1 {font-size:16px;margin:0;font-weight:normal;}
+    .amount-title {text-align:center;font-size:14px;font-weight:600;}
+    .amount {text-align:center;font-size:22px;font-weight:700;margin:4px 0 20px;}
+    .row {display:flex;justify-content:space-between;padding:10px 0;}
+    .row .label {font-size:13px;color:#888;}
+    .row .value {font-size:13px;text-align:right;}
+    .row .value .normal {
+      display: block;
+      font-size: 13px;
+      color: #000;
+      font-weight: normal;
+      text-align: right;
+    }
+    .row .value small {font-size:11px;color:#999;}
+    .divider {height:1px;background:#ddd;}
+    .promo {display:flex;align-items:center;background:#f2f0fb;border-radius:10px;padding:16px 18px;margin:20px 0;cursor:pointer;}
+    .promo img {width:40px;height:40px;margin-right:12px;}
+    .promo p {font-size:14px;font-weight:600;color:#4a148c;margin:0;}
+    .footer {font-size:8px;color:#888;text-align:center;margin-top:30px;line-height:1.5;padding:0 16px;}
+    #reference {font-weight:normal;}
+    @media (max-width:480px){.promo{flex-direction:column;text-align:center}.promo img{margin:0 0 10px}}
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <img src="images/kudar.png" alt="Kuda Logo">
+    <h1>Transaction Details</h1>
+  </div>
+
+  <!-- Amount -->
+  <p class="amount-title">Transaction Amount</p>
+  <p class="amount" id="amount">₦0.00</p>
+
+  <!-- Beneficiary -->
+  <div class="row">
+    <div class="label">Beneficiary Details</div>
+    <div class="value">
+      <span id="receiverName" class="normal">Receiver Name</span>
+      <small><span id="receiverBank">Bank</span> | <span id="receiverAccount">0000000000</span></small>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- Sender -->
+  <div class="row">
+    <div class="label">Sender Details</div>
+    <div class="value">
+      <span id="senderName" class="normal">Sender Name</span>
+      <small>Kuda | <span id="senderAccount">0000000000</span></small>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- Paid On -->
+  <div class="row">
+    <div class="label">Paid On</div>
+    <div class="value">
+      <span id="date" class="normal">Sep 22, 2025</span>
+      <small id="time">9:20 AM</small>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- Fees -->
+  <div class="row">
+    <div class="label">Fees</div>
+    <div class="value">₦10</div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- Description -->
+  <div class="row">
+    <div class="label">Description</div>
+    <div class="value" id="description">Utilities</div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- Transaction Reference -->
+  <div class="row">
+    <div class="label">Transaction Reference</div>
+    <div class="value">
+      <span id="reference">000000000000000000000000000000</span>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- Payment Type -->
+  <div class="row">
+    <div class="label">Payment Type</div>
+    <div class="value">Outward Transfer</div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- Promo Section (long press to download) -->
+  <div class="promo" id="promo">
+    <img src="images/kuda.png" alt="Kuda App">
+    <p>Not on Kuda? Tap here to download the money app for Africans</p>
+  </div>
+
+  <!-- Footer -->
+  <p class="footer">
+    © 2025 Kuda Technologies Ltd (Company No. 11472232).<br>
+    All rights reserved. Nigerian banking services offered by Kuda Microfinance Bank (RC796975) with registered address at 1-11 Commercial avenue, Yaba, Lagos, Nigeria.<br>
+    Kuda Microfinance Bank is licensed by the Central Bank of Nigeria. Deposits are insured by the Nigerian Deposit Insurance Corporation (NDIC).
+  </p>
+
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    // ✅ Load receipt data from localStorage
+    const data = JSON.parse(localStorage.getItem("receiptData") || "{}");
+
+    // Fill receipt with values
+    document.getElementById("amount").textContent = data.amount ? "₦" + Number(data.amount).toLocaleString("en-NG", {minimumFractionDigits:2}) : "₦0.00";
+    document.getElementById("receiverName").textContent = data.beneficiary || "Receiver Name";
+    document.getElementById("receiverBank").textContent = data.bank || "Bank";
+    document.getElementById("receiverAccount").textContent = data.account || "0000000000";
+    document.getElementById("senderName").textContent = data.sender || "Sender Name";
+    document.getElementById("senderAccount").textContent = data.senderAccount || "0000000000";
+    document.getElementById("description").textContent = data.description || "Utilities";
+
+    // ✅ Paid On (Fixed to actual saved time, not reload time)
+    let txnDate;
+    if (data.date) {
+      txnDate = new Date(data.date); // use saved date/time
+    } else {
+      txnDate = new Date(); // fallback if none was saved
+    }
+    document.getElementById("date").textContent = txnDate.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
+    document.getElementById("time").textContent = txnDate.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",hour12:true});
+
+    // Reference
+    function generateTransactionRef() {
+      let middle = "";
+      for (let i = 0; i < 20; i++) {
+        middle += Math.floor(Math.random() * 10);
+      }
+      return "09026" + middle + "19357";
+    }
+    const reference = generateTransactionRef();
+    document.getElementById("reference").textContent = reference;
+
+    // ✅ Capture whole page
+    function captureReceipt() {
+      return html2canvas(document.body, { scale: 2 });
+    }
+
+    // Save as PDF
+    function saveAsPDF() {
+      captureReceipt().then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF("p", "mm", "a4");
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
+        pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pdfHeight);
+        pdf.save(`receipt-${reference}.pdf`);
+      });
+    }
+
+    // Save as JPG
+    function saveAsJPG() {
+      captureReceipt().then(canvas => {
+        const link = document.createElement("a");
+        link.download = `receipt-${reference}.jpg`;
+        link.href = canvas.toDataURL("image/jpeg", 1.0);
+        link.click();
+      });
+    }
+
+    // ✅ Long-press detection
+    let pressTimer;
+    const promo = document.getElementById("promo");
+    promo.addEventListener("mousedown", startPress);
+    promo.addEventListener("touchstart", startPress);
+    promo.addEventListener("mouseup", cancelPress);
+    promo.addEventListener("mouseleave", cancelPress);
+    promo.addEventListener("touchend", cancelPress);
+
+    function startPress() {
+      pressTimer = setTimeout(showDownloadOptions, 800);
+    }
+    function cancelPress() {
+      clearTimeout(pressTimer);
+    }
+
+    // ✅ Show download options popup
+    function showDownloadOptions() {
+      Swal.fire({
+        title: "Download Receipt",
+        text: "Choose a format to download your receipt:",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonText: "📄 PDF",
+        cancelButtonText: "🖼️ JPG",
+        reverseButtons: true
+      }).then((result) => {
+        setTimeout(() => {
+          if (result.isConfirmed) {
+            saveAsPDF();
+          } else if (result.dismiss === Swal.DismissReason.cancel) {
+            saveAsJPG();
+          }
+        }, 300);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Transaction Receipt</title>
+  <style>
+    :root {
+  --header-h: 56px;
+  --sticker-h: 72px;
+  --footer-h: 64px;
+}
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+/* ===== Reset & Base ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Roboto, Arial, sans-serif;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: #F2F3F8;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ===== Header ===== */
+.header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--header-h);
+
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+
+  background: #fff;
+
+  z-index: 1000;
+}
+
+.header img {
+  height: 25px;
+  margin-right: 12px;
+  width: 30px;
+}
+
+.header-title {
+  flex: 1;
+  color: #042148;
+  font-weight: 500;
+  font-size: 16px;
+ 
+}
+
+/* ===== Main Scrollable Content ===== */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  margin-top: var(--header-h);
+  padding: 16px;
+  padding-bottom: calc(var(--footer-h) + var(--sticker-h) + 32px);
+}
+
+
+.receipt {
+  min-height: 535px; /* allows it to expand if content grows */
+  padding: 10px;
+
+  background-image: url('images/background.png');
+  background-size: 100% 100%; /* force stretch both directions */
+  background-repeat: no-repeat;
+}
+
+.receipt-content {
+ height: 300px;
+ background-image: url('images/watermark.png');
+ 
+ 
+}
+
+.receipt-content img {
+  width: 110px;
+  margin-top: 15px;
+  margin-right: 10px;
+}
+
+.amount {
+  text-align: center;
+  font-size: 25px;
+  color: #6C37F2;
+  font-weight: 600;
+  margin-top: 11px;
+}
+
+.status {
+  text-align: center;
+  font-size: 14px;
+  color: #000;
+  margin-top: 6px;
+}
+
+.date {
+  text-align: center;
+  font-size: 12px;
+  color: #9E9E9E;
+  margin-top: 6px;
+}
+
+.divider {
+  color: #F2F3F8;
+  text-align: center;
+  letter-spacing: -1px;
+  margin-top: 5px;
+}
+
+/* Detail rows */
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 3px 0;
+}
+
+.detail-label {
+  flex: 1;
+  padding: 8px;
+  font-size: 14px;
+  color: #042148;
+}
+
+.detail-value {
+  flex: 2;
+  padding: 8px;
+  text-align: right;
+}
+
+.main-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #042148;
+}
+
+.sub-text {
+  font-size: 12px;
+  color: #9E9E9E;
+  margin-top: 10px;
+  
+}
+
+/* Info row */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 8px;
+}
+
+.info-label {
+  flex: 1;
+  font-size: 11px;
+  color: #90A4AE;
+}
+
+
+
+
+
+.info-value {
+  flex: 1;
+  text-align: right;
+  font-size: 12px;
+  color: #042148;
+}
+
+.footer-message {
+  font-size: 11px;
+  color: #9E9E9E;
+  margin-top: 5px;
+  line-height: 1.4;
+  width: 280px;
+}
+
+/* ===== Sticker Row (images, fixed above footer) ===== */
+.sticker-fixed {
+  position: fixed;
+  left: 0; right: 0;
+  bottom: var(--footer-h);
+  height: var(--sticker-h);
+
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  padding: 8px 12px;
+  gap: 12px;
+
+  background: #F2F3F8;
+  box-shadow: 0 -1px 6px rgba(0,0,0,0.03);
+
+  z-index: 1000;
+}
+
+.sticker-fixed img {
+  flex: 0 0 auto;
+  width: 60px; height: 60px;
+  border-radius: 10px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+/* ===== Footer Buttons ===== */
+.action-buttons {
+  position: fixed;
+  left: 0; right: 0;
+  bottom: 0;
+  height: var(--footer-h);
+
+  display: flex;
+  background: #fff;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.06);
+
+  z-index: 1001;
+}
+
+.action-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.action-button img {
+  width: 18px; height: 18px;
+}
+
+.action-text {
+  font-size: 13px;
+  font-weight: 400;
+  color: #651FFF;
+}
+  </style>
+</head>
+<body>
+  <!-- Load html2canvas and jsPDF from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <div class="header">
+  <img src="images/back.png" alt="back" id="backArrow" style="cursor:pointer;">
+    <div class="header-title">Transaction receipt</div>
+  </div>
+
+  <!-- Main -->
+  <div class="main-content">
+    <div class="receipt-bg">
+      <div class="receipt">
+        <div class="receipt-content">
+          <img src="images/logo.png" alt="logo">
+          <div class="amount" id="receiptAmount"></div>
+          <div class="status">Successful Transaction</div>
+          <div class="date" id="receiptDate"></div>
+
+          <center><div class="divider">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - </div></center>
+          <div class="detail-row">
+            <div class="detail-label">Recipient:</div>
+            <div class="detail-value">
+              <div class="main-text" id="recipientName"></div>
+              <div class="sub-text" id="recipientBankAcct"></div>
+            </div>
+          </div>
+          <center><div class="divider">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - </div></center>
+          <div class="detail-row">
+            <div class="detail-label">Sender:</div>
+            <div class="detail-value">
+              <div class="main-text" id="senderName"></div>
+              <div class="sub-text" id="senderBankAcct"></div>
+            </div>
+          </div>
+          <center><div class="divider">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - </div></center>
+          <div class="detail-label">Transaction Info:</div>
+          <div class="info-row"><div class="info-label">Transaction Type</div><div class="info-value">Money Transfer - MMO</div></div>
+          <div class="info-row"><div class="info-label">Transaction ID</div><div class="info-value">0xf48sf5jhs5</div></div>
+          <div class="info-row"><div class="info-label">Session ID</div><div class="info-value"><div id="sessionId1"></div><div id="sessionId2"></div></div></div>
+          <center><div class="divider">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - </div></center>
+          <div class="footer-message">Enjoy Seamless and Unlimited Free Transfers to All Banks</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stickers as images -->
+  <div class="sticker-fixed">
+    <img src="images/receipt.png" alt="Receipt">
+    <img src="images/birthday.png" alt="Birthday">
+    <img src="images/valentine.png" alt="Valentine">
+    <img src="images/wedding.png" alt="Wedding" style="width: 50px; height: 50px;">
+    <img src="images/graduation.png" alt="Graduation">
+    <img src="images/wishes.png" alt="Wishes">
+  </div>
+
+  <!-- Footer buttons -->
+  <div class="action-buttons">
+    <div class="action-button" id="shareAsImageBtn">
+      <img src="images/share.png" alt="share">
+      <div class="action-text">Share as Image</div>
+    </div>
+    <div class="action-button" id="saveAsPdfBtn">
+      <img src="images/save.png" alt="save">
+      <div class="action-text">Save as PDF</div>
+    </div>
+  </div>
+<script>
+  // Load receipt data from localStorage and update sender/recipient details, amount/date, and session ID
+  document.addEventListener('DOMContentLoaded', function() {
+    try {
+      var data = JSON.parse(localStorage.getItem('receiptData'));
+      if (data) {
+        // Recipient
+        if (data.beneficiaryName) {
+          document.getElementById('recipientName').textContent = data.beneficiaryName;
+        }
+        if (data.beneficiaryBank && data.beneficiaryAcctNo) {
+          document.getElementById('recipientBankAcct').textContent = data.beneficiaryBank + ' I ' + data.beneficiaryAcctNo;
+        }
+        // Sender
+        if (data.senderName) {
+          document.getElementById('senderName').textContent = data.senderName;
+        }
+        // Format sender account number as 916***5677
+        if (data.senderAcctNo) {
+          var acct = data.senderAcctNo;
+          if (acct.length === 10) {
+            acct = acct.substring(0,3) + '***' + acct.substring(6);
+          }
+          document.getElementById('senderBankAcct').textContent = 'PalmPay I ' + acct;
+        } else {
+          document.getElementById('senderBankAcct').textContent = 'PalmPay';
+        }
+        // Amount
+        if (data.amount) {
+          var formattedAmount = Number(data.amount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+          document.getElementById('receiptAmount').textContent = '₦' + formattedAmount;
+        }
+  // Completion time
+  var dateStr = data.date || '';
+  document.getElementById('receiptDate').textContent = dateStr;
+        // Session ID
+        if (data.sessionId) {
+          document.getElementById('sessionId1').textContent = data.sessionId;
+          document.getElementById('sessionId2').textContent = data.sessionId;
+        }
+      }
+    } catch (e) {
+      // fallback: leave blank or log error
+    }
+    // Share as Image functionality
+    document.getElementById('shareAsImageBtn').onclick = function() {
+      var receipt = document.querySelector('.receipt');
+      html2canvas(receipt, {backgroundColor: '#000'}).then(function(canvas) {
+        // Add curved outline overlay
+        var overlay = new Image();
+        overlay.src = 'images/outline.png'; // You must provide this PNG in your images folder
+        overlay.onload = function() {
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(overlay, 0, 0, canvas.width, canvas.height);
+          var link = document.createElement('a');
+          link.download = 'receipt.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        };
+        overlay.onerror = function() {
+          // fallback if overlay not found
+          var link = document.createElement('a');
+          link.download = 'receipt.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        };
+      });
+    };
+    // Save as PDF functionality
+    document.getElementById('saveAsPdfBtn').onclick = function() {
+      var receipt = document.querySelector('.receipt');
+      html2canvas(receipt, {backgroundColor: '#000'}).then(function(canvas) {
+        // Add curved outline overlay
+        var overlay = new Image();
+        overlay.src = 'images/outline.png'; // You must provide this PNG in your images folder
+        overlay.onload = function() {
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(overlay, 0, 0, canvas.width, canvas.height);
+          var imgData = canvas.toDataURL('image/png');
+          var pdf = new window.jspdf.jsPDF({orientation: 'portrait', unit: 'px', format: [canvas.width, canvas.height]});
+          pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+          pdf.save('receipt.pdf');
+        };
+        overlay.onerror = function() {
+          var imgData = canvas.toDataURL('image/png');
+          var pdf = new window.jspdf.jsPDF({orientation: 'portrait', unit: 'px', format: [canvas.width, canvas.height]});
+          pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+          pdf.save('receipt.pdf');
+        };
+      });
+    };
+  });
+  // Back arrow navigation
+  document.getElementById('backArrow').onclick = function() {
+  window.location.href = 'index.html';
+  };
+</script>
+</body>
+</html>

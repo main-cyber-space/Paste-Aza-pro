@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Status</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    .card {
+      max-width: 400px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h2 { color: #1a73e8; margin-bottom: 20px; }
+    .info { margin: 10px 0; font-size: 15px; }
+    .back-btn {
+      margin-top: 20px;
+      display: inline-block;
+      background: #1a73e8;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>License Status</h2>
+  <div id="statusInfo">
+    Loading...
+  </div>
+  <a href="index.html" class="back-btn"><i class="fa fa-arrow-left"></i> Back</a>
+</div>
+
+<script>
+  function getOrCreateUID() {
+    let uid = localStorage.getItem('userUID');
+    if (!uid) {
+      uid = 'UID-' + Math.random().toString(36).substring(2,11) + '-' + Date.now();
+      localStorage.setItem('userUID', uid);
+    }
+    return uid;
+  }
+
+  function checkStoredLicense() {
+    const token = localStorage.getItem('licenseToken');
+    const uid = getOrCreateUID();
+    if (!token) return {valid:false};
+
+    // reuse validateTokenFormat from index.html
+    function validateTokenFormat(token, uid) {
+      if (!token.startsWith('A' + uid)) return {ok:false};
+      const rest = token.slice(('A' + uid).length);
+
+      const cycles = {
+        7: {W:"KPACTW", M:"KPACTM", U:"KPACTU"},
+        8: {W:"BKPACTW", M:"CKPACTM", U:"DKPACTU"},
+        9: {W:"EKPACTW", M:"FKPACTM", U:"GKPACTU"},
+        10:{W:"HKPACTW", M:"IKPACTM", U:"JKPACTU"},
+        5: {W:"LKPACTW", M:"MKPACTM", U:"NKPACTU"},
+        6: {W:"OKPACTW", M:"PKPACTM", U:"QKPACTU"},
+      };
+
+      const match = rest.match(/^(\d+)([A-Z]+)$/);
+      if (!match) return {ok:false};
+      const digits = match[1];
+      const suffix = match[2];
+      const len = digits.length;
+
+      const cycle = cycles[len];
+      if (!cycle) return {ok:false};
+
+      let plan=null, days=0;
+      if (digits.split('').every(d=>d===digits[0])) {
+        if (suffix===cycle.W){plan='Week';days=7;}
+        if (suffix===cycle.M){plan='Month';days=30;}
+        if (suffix===cycle.U){plan='Unlimited';days=Infinity;}
+      }
+      if (!plan) return {ok:false};
+
+      return {ok:true, plan, days};
+    }
+
+    const parsed = validateTokenFormat(token, uid);
+    if (!parsed.ok) return {valid:false};
+
+    if (parsed.plan==='Unlimited') {
+      return {valid:true, plan:parsed.plan, expiry:'Never'};
+    }
+
+    const startIso = localStorage.getItem('licenseStart');
+    if (!startIso) return {valid:false};
+    const startDate = new Date(startIso);
+    const expiry = new Date(startDate);
+    expiry.setDate(expiry.getDate()+parsed.days);
+    return {valid:new Date()<=expiry, plan:parsed.plan, expiry:expiry.toISOString()};
+  }
+
+  const info = document.getElementById('statusInfo');
+  const status = checkStoredLicense();
+  if (!status.valid) {
+    info.innerHTML = `<div class="info"><b>Status:</b> ❌ Invalid or expired license</div>`;
+  } else {
+    info.innerHTML = `
+      <div class="info"><b>Status:</b> ✅ Active</div>
+      <div class="info"><b>Plan:</b> ${status.plan}</div>
+      <div class="info"><b>Expiry:</b> ${status.expiry}</div>
+    `;
+  }
+</script>
+
+</body>
+</html>

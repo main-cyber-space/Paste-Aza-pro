@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>Transaction Details</title>  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Roboto", Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f8f8fb;
+      color: #212121;
+      line-height: 1.5;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 600px;
+      margin: 0 auto;
+      background: #f8f8fb;
+      margin-left: 5px;
+      margin-right: 5px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      padding: 14px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .back-arrow {
+      font-size: 22px;
+      color: #000000;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .header-title {
+      flex-grow: 1;
+      font-size: 16px;
+      color: #212121;
+      font-weight: 400;
+    }
+
+    /* ImageView menu icon */
+    .menu-icon {
+      width: 29px;
+      height: 29px;
+      cursor: pointer;
+    }
+
+    /* Scrollable content */
+    .scroll-view {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      padding: 10px;
+    }
+
+    /* Profile circle */
+    .profile-image img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin: -30px auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .profile-image i {
+      font-size: 26px;
+      color: #00b876;
+    }
+
+    /* Amount + Status */
+    .amount-section {
+      text-align: center;
+      padding-top: 5px;
+    }
+
+    .transfer-text {
+      font-size: 14px;
+      color: #000000;
+      margin-bottom: 6px;
+    }
+
+    .amount {
+      font-size: 26px;
+      font-weight: bold;
+      color: #000000;
+      margin-bottom: 4px;
+    }
+
+    .status {
+      font-size: 15px;
+      font-weight: 400;
+    }
+    
+    .status-success {
+      color: #00b876;
+    }
+    
+    .status-pending {
+      color: #ff9800;
+    }
+    
+    .status-failed {
+      color: #f44336;
+    }
+
+    /* Timeline */
+    .timeline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 10px 0 10px;
+      width: 215px;
+    }
+
+    .timeline-dot {
+      width: 15px;
+      height: 15px;
+      object-fit: cover;
+    }
+
+    .timeline-line {
+      height: 1px;
+      flex-grow: 1;
+      margin: 0 10px;
+    }
+    
+    .timeline-line-success {
+      background: #00b876;
+    }
+    
+    .timeline-line-pending {
+      background: #cccccc;
+    }
+
+    .timeline-labels {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .timeline-label {
+      flex: 1;
+      text-align: center;
+    }
+
+    .label-title {
+      font-size: 12px;
+      color: #616161;
+      line-height: 1.2;
+    }
+
+    .label-time {
+      font-size: 12px;
+      color: #9e9e9e;
+      margin-top: 2px;
+    }
+
+    /* Transaction details rows */
+    .divider {
+      height: 1px;
+      background: #eeeeee;
+      margin: 12px 0;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+    }
+
+    .detail-label {
+      font-size: 13px;
+      color: #9e9e9e;
+      flex: 1;
+    }
+
+    .detail-value {
+      font-size: 13px;
+      color: #424242;
+      font-weight: 400;
+      text-align: right;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #000000;
+      margin-bottom: 4px;
+    }
+
+    /* Footer wrapper */
+    .footer {
+      background: #f8f8fb;
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+    }
+
+    .action-buttons {
+      display: flex;
+      padding: 12px;
+      gap: 12px;
+      padding-bottom: 20px;
+    }
+
+    .button {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .button-outline {
+      background: #E9F7EF;
+      color: #00b876;
+      border-radius: 50px;
+    }
+
+    .button-solid {
+      background: #00b876;
+      color: #ffffff;
+      border: none;
+      border-radius: 50px;
+    }
+
+    .dispute-button {
+      padding: 12px;
+      text-align: center;
+    }
+
+    .dispute {
+      color: #00b876;
+      border-radius: 50px;
+      padding: 13px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      background-color: #E9F7EF;
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .icon-small {
+      font-size: 12px;
+      margin-left: 4px;
+      color: #9e9e9e;
+    }
+
+    /* Action Items */
+    .action-row {
+      display: flex;
+      align-items: center;
+      margin: 15px 0;
+    }
+    .action-label {
+      flex: 1;
+      font-size: 13px;
+      color: #9E9E9E;
+      margin-left: 8px;
+    }
+    .action-value {
+      font-size: 13px;
+      color: #000;
+      margin-right: 8px;
+    }
+
+    /* More Actions */
+    .more-actions {
+      display: flex;
+      margin-top: 0px;
+    }
+    .action-item {
+      display: flex;
+      align-items: center;
+      color: #00B876;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .action-icon {
+      width: 20px;
+      height: 20px;
+      background-color: #00B876;
+      border-radius: 4px;
+      margin-right: 5px;
+    }
+
+    /* Content Sections */
+    .content-section {
+      background: #fff;
+      margin: 0px 2px;
+      border-radius: 8px;
+      padding: 15px;
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: #E0E0E0;
+      margin: 15px 0;
+      text-align: center;
+      position: relative;
+    }
+    .divider-text {
+      display: inline-block;
+      background: #fff;
+      padding: 0 0px;
+      position: relative;
+      top: -10px;
+      color: #E0E0E0;
+      font-size: 12px;
+    }
+    
+    /* Bubble Section */
+     :root{
+      --bubble-bg: #f6f8f8;
+      --text-gray: #7f8b8b;
+      --link-green: #04c08a;
+      --bubble-radius: 20px;
+      --font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    .wrap{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height: auto;
+      margin: 5px;
+    }
+
+    .bubble{
+      max-width: 999px;
+      background: var(--bubble-bg);
+      border-radius: var(--bubble-radius);
+      padding: 12px;
+      box-shadow: none;
+      margin:0;
+      font-size: 10px;
+      line-height: 1.1;
+      color: var(--text-gray);
+      font-weight:400;
+      letter-spacing:0.0px;
+    }
+
+    
+    .bubble a{
+      color: var(--link-green);
+      text-decoration: none;
+      font-weight:400;
+      margin-left:4px;
+    }
+
+    .chev {
+      margin-left:4px;
+      margin-right:4px;
+      color: var(--link-green);
+      font-weight:600;
+    }
+
+    .phone-icon{
+      display:inline-block;
+      vertical-align: middle;
+      
+      color: var(--link-green);
+      font-size:10px;
+    }
+
+    @media (max-width:480px){
+      .bubble{ padding:10px; border-radius:16px; }
+      .bubble p{ font-size:12px; }
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+   
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="back-arrow">‹</div>
+      <div class="header-title">Transaction Details</div>
+      <img src="images/support.png" alt="menu" class="menu-icon" />
+    </div>
+
+    
+    <!-- Main Content -->
+    <div class="scroll-view">
+      <div class="card" style="margin-top: 20px;">
+  <div class="profile-image"><img id="bankLogo" src="images/logo.png" alt="Bank Logo"></div>
+        <div class="amount-section">
+          <div class="transfer-text"></div>
+          <div class="amount">₦2,000.00</div>
+          <div class="status status-success">Successful</div>
+        </div>
+        <center>
+          <div class="timeline">
+            <img src="images/tick.png" alt="dot" class="timeline-dot" />
+            <div class="timeline-line timeline-line-success"></div>
+            <img src="images/tick.png" alt="dot" class="timeline-dot" />
+            <div class="timeline-line timeline-line-success"></div>
+            <img src="images/tick.png" alt="dot" class="timeline-dot" />
+          </div>
+        </center>
+        <div class="timeline-labels">
+          <div class="timeline-label">
+            <div class="label-title">Payment<br />Successful</div>
+            <div class="label-time">02-23 07:09:56</div>
+          </div>
+          <div class="timeline-label">
+            <div class="label-title">Processing<br/>by bank</div>
+            <div class="label-time">02-23 07:09:56</div>
+          </div>
+          <div class="timeline-label">
+            <div class="label-title">Received<br />by bank</div>
+            <div class="label-time">02-23 07:09:56</div>
+          </div>
+        </div>
+        
+        <div class="wrap" role="note" aria-label="Bank credit notice">
+          <div class="bubble">
+            
+              The recipient account is expected to be credited within 5 minutes, subject to notification by the bank. If you have any questions, you can also
+              <a href="#" onclick="return false;">contact the recipient bank</a>
+              <span class="chev">&gt;&gt;</span>
+              <i class="fas fa-phone phone-icon" aria-hidden="true"></i>
+            
+          </div>
+        </div>
+       
+
+        <div class="detail-row">
+          <div class="detail-label">Amount</div>
+          <div class="detail-value">₦2,000.00</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Fee</div>
+          <div class="detail-value"><span style="color: #D3D3D3 ; text-decoration: line-through; margin-right: 3px;">₦10.00</span>₦10.00</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Amount Paid</div>
+          <div class="detail-value">₦2,000.00</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Transaction Details</div>
+        <div class="detail-row">
+          <div class="detail-label">Recipient Details</div>
+          <div class="detail-value" style="line-height:1.4; text-align:right;"></div>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-label">Transaction No.</div>
+          <div class="detail-value">
+            250225010100418357292729 <img style="width:13px; height:13px;" src="images/numbercopy.png" alt="">
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Payment Method</div>
+          <div class="detail-value">Wallet <i class="fas fa-angle-right"></i></div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Transaction Date</div>
+          <div class="detail-value">Feb 25th, 2025 08:19:56</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Session ID</div>
+          <div class="detail-value">
+            100004250223182413127782423243
+            <img style="width:13px; height:13px;" src="images/numbercopy.png" alt="">
+          </div>
+        </div>
+      </div>
+
+      <!-- More Actions Section -->
+      <div class="content-section" id="legSection">
+        <div class="section-title">More Actions</div>
+        <div class="action-row">
+          <div class="action-label">Choose Category</div>
+          <div class="action-value">Transfer</div>
+          <span class="material-icons" style="color: grey;">chevron_right</span>
+        </div>
+        <center>
+          <span class="divider-text">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span>
+        </center>
+        <div class="more-actions">
+          <div class="action-item" onclick="transferBack()">
+            <img src="images/transfer.png" style="width: 20px; height: 20px;" alt="transfer">
+            <span>Transfer Back</span>
+          </div>
+          <div class="action-item" onclick="viewRecords()"><span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="action-buttons">
+        <div class="button button-outline">Report an issue</div>
+  <div class="button button-solid" onclick="window.location.href='opaysharereceipt.html'">Share Receipt</div>
+      </div>
+      <div class="dispute-button hidden">
+        <div class="dispute">Dispute</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    try {
+      var data = JSON.parse(localStorage.getItem('receiptData') || '{}');
+      // If no beneficiaryName, show a warning
+      if (!data.beneficiaryName) {
+        document.querySelectorAll('.transfer-text').forEach(function(el) {
+          el.textContent = 'Transfer to [No Name - Please use the form]';
+        });
+        // Also update recipient details
+        var detailsCard = document.querySelectorAll('.card')[1];
+        if (detailsCard) {
+          var details = detailsCard.querySelectorAll('.detail-value');
+          if (details[0]) {
+            details[0].innerHTML = '[No Name]<br><span style="font-size:12px; color:#616161;">Bank | Account</span>';
+          }
+        }
+        return;
+      }
+
+      // Set bank logo dynamically based on beneficiaryBank, fallback to default.png
+      var bankLogo = document.getElementById('bankLogo');
+      var bankName = data.beneficiaryBank || '';
+      var iconFile = (bankName && bankName.trim() !== '') ? bankName.toLowerCase().replace(/[^a-z0-9]/g, '').replace('bank','') + '.png' : 'default.png';
+      // Map some known exceptions
+      const iconMap = {
+        'access': 'access.png',
+        'uba': 'uba.png',
+        'gtbank': 'gtbank.png',
+        'first': 'firstbank.png',
+        'zenith': 'zenith.png',
+        'opay': 'opay.png',
+        'palmpay': 'palmpay.png',
+        'kuda': 'kudabank.png',
+        'wema': 'wema.png',
+        'fidelity': 'fidelity.png',
+        'union': 'union.png',
+        'sterling': 'sterling.png',
+        'ecobank': 'ecobank.png',
+        'stanbic': 'stanbic.png',
+        'providus': 'providus.png',
+        'jaiz': 'jaiz.png',
+        'heritage': 'heritage.png',
+        'unity': 'unity.png',
+        'keystone': 'keystone.png',
+        'suntrust': 'suntrust.png',
+        'globus': 'globus.png',
+        'parallex': 'parallex.png',
+        'titan': 'titan.png',
+        'fcmb': 'fcmb.png',
+        'paga': 'paga.png',
+        'moniepoint': 'moniepoint.png',
+        'vfd': 'vfd.png',
+        'fairmoney': 'fairmoney.png',
+        '9psb': '9psb.png'
+      };
+      var key = bankName.toLowerCase().replace(/[^a-z0-9]/g, '').replace('bank','');
+      if (iconMap[key]) iconFile = iconMap[key];
+      if (bankLogo) {
+        bankLogo.src = 'images/' + iconFile;
+        bankLogo.onerror = function() { this.src = 'images/default.png'; };
+      }
+      // Generate and persist 24-digit transaction number and 30-digit session ID if not present
+      if (!data.transactionNo) {
+        data.transactionNo = randomDigits(24);
+        localStorage.setItem('receiptData', JSON.stringify(data));
+      }
+      if (!data.sessionId) {
+        data.sessionId = randomDigits(30);
+        localStorage.setItem('receiptData', JSON.stringify(data));
+      }
+
+      // Update ALL transfer-to text elements
+      var transferTextValue = 'Transfer to ' + data.beneficiaryName;
+      document.querySelectorAll('.transfer-text').forEach(function(el) {
+        el.textContent = transferTextValue;
+      });
+
+      // Update amount (main)
+      var formattedAmount = data.amount ? '₦' + Number(data.amount).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) : '₦0.00';
+      var amountElem = document.querySelector('.amount');
+      if (amountElem) amountElem.textContent = formattedAmount;
+
+      // Update Amount row in first card
+      var firstCard = document.querySelectorAll('.card')[0];
+      if (firstCard) {
+        var amountRow = firstCard.querySelectorAll('.detail-value')[0];
+        if (amountRow) amountRow.textContent = formattedAmount;
+        var paidRow = firstCard.querySelectorAll('.detail-value')[2];
+        if (paidRow) paidRow.textContent = formattedAmount;
+      }
+
+      // Update Transaction Details card
+      var detailsCard = document.querySelectorAll('.card')[1];
+      if (detailsCard) {
+        var details = detailsCard.querySelectorAll('.detail-value');
+        // Recipient Details
+        if (details[0]) {
+          details[0].innerHTML = data.beneficiaryName + '<br><span style="font-size:12px; color:#616161;">' + (data.beneficiaryBank || 'Bank') + ' | ' + (data.beneficiaryAcctNo || 'Account') + '</span>';
+        }
+        // Transaction No. (24 digits, persistent)
+        if (details[1]) {
+          details[1].innerHTML = data.transactionNo + ' <img style="width:13px; height:13px;" src="images/numbercopy.png" alt="">';
+        }
+        // Transaction Date
+        if (details[3] && data.date) {
+          details[3].textContent = data.date;
+        }
+        // Session ID (30 digits, persistent)
+        if (details[4]) {
+          details[4].innerHTML = data.sessionId + ' <img style="width:13px; height:13px;" src="images/numbercopy.png" alt="">';
+        }
+      }
+    } catch (e) {
+      document.querySelectorAll('.transfer-text').forEach(function(el) {
+        el.textContent = 'Transfer to [Error loading data]';
+      });
+    }
+  });
+</script>
+</body>
+</html>

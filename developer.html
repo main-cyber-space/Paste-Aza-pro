@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer - Max Tech</title>
+  <!-- Lottie -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.6/lottie.min.js"></script>
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-light: #f5f5f5;
+      --bg-dark: #121212;
+      --text-light: #333;
+      --text-dark: #fff;
+      --primary: #1a73e8;
+    }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--bg-light);
+      color: var(--text-light);
+      transition: background 0.3s ease, color 0.3s ease;
+      text-align: center;
+    }
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      position: relative;
+    }
+    /* Theme toggle button */
+    .theme-toggle {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.3s ease;
+    }
+    .theme-toggle:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    .container {
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    .lottie-container {
+      width: 200px;
+      height: 200px;
+      margin: 20px auto;
+    }
+    h2 {
+      color: var(--primary);
+      margin: 15px 0 10px;
+    }
+    p {
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+    /* Skills section */
+    .skills {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 25px;
+      margin: 20px 0;
+    }
+    .skill {
+      text-align: center;
+      font-size: 14px;
+    }
+    .skill i {
+      font-size: 28px;
+      margin-bottom: 6px;
+      color: var(--primary);
+    }
+    /* Contact buttons */
+    .contact {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .contact a {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      transition: opacity 0.3s ease;
+    }
+    .whatsapp { background: #25d366; }
+    .telegram { background: #0088cc; }
+    .contact a:hover { opacity: 0.85; }
+  </style>
+</head>
+<body>
+
+  <header style="display:flex;align-items:center;gap:12px;position:relative;">
+    <img src="images/back.png" alt="back" id="backArrow" style="height:24px;cursor:pointer;">
+    <span style="flex:1;">Developer — Max Tech</span>
+  </header>
+
+  <div class="container">
+    <div class="lottie-container" id="lottie-dev"></div>
+
+    <h2>About Me</h2>
+    <p>
+      Hi 👋, I’m <b>Max Tech</b> — a passionate software developer and problem solver.  
+      I specialize in crafting modern web applications, intuitive UIs, and optimized backend systems.  
+      Over the years, I’ve worked on projects ranging from simple landing pages to scalable apps with thousands of users.  
+    </p>
+    <p>
+      I love exploring new technologies, automating workflows, and building tools that make people’s lives easier.  
+      When I’m not coding, I enjoy researching tech trends, experimenting with new frameworks, and sharing knowledge with the community.  
+    </p>
+
+    <h2>Skills & Tools</h2>
+    <div class="skills">
+      <div class="skill"><i class="fab fa-html5"></i><br>HTML</div>
+      <div class="skill"><i class="fab fa-css3-alt"></i><br>CSS</div>
+      <div class="skill"><i class="fab fa-react"></i><br>React</div>
+      <div class="skill"><i class="fas fa-code"></i><br>TypeScript</div>
+      <div class="skill"><i class="fab fa-node"></i><br>Node.js</div>
+      <div class="skill"><i class="fas fa-database"></i><br>Database</div>
+    </div>
+
+    <h2>Contact Me</h2>
+    <div class="contact">
+      <a href="https://wa.me/2349020388011" target="_blank" class="whatsapp">
+        <i class="fab fa-whatsapp"></i> WhatsApp
+      </a>
+      <a href="https://t.me/cyber_space01" target="_blank" class="telegram">
+        <i class="fab fa-telegram"></i> Telegram
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Load Lottie animation: Laptop Coding
+    lottie.loadAnimation({
+      container: document.getElementById('lottie-dev'),
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: 'https://assets2.lottiefiles.com/packages/lf20_qp1q7mct.json'
+    });
+
+    // Back arrow to dashboard
+    document.getElementById('backArrow').onclick = function() {
+      window.location.href = 'index.html';
+    };
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Transaction Details</title>
+  <style>
+      * {
+  -webkit-tap-highlight-color: transparent;
+}
+  /* ================== Root Variables ================== */
+  @font-face {
+  font-family: 'MyCustomFont';
+  src: url('font/palmpay.ttf') format('truetype');
+}
+
+  :root {
+    --accent: #6C37F2;
+    --card-bg: #FFFFFF;
+    --muted: #90A4AE;
+    --page-bg: #F6F6FA;
+    --primary: #042148;
+    --shadow: 0 6px 18px rgba(18,34,68,0.06);
+    font-family: Inter, Roboto, Arial, sans-serif;
+  }
+
+  /* ================== Reset ================== */
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    background: var(--page-bg);
+    color: var(--primary);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ================== Header ================== */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: var(--page-bg);
+  }
+
+  .topbar img.icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+  }
+
+  .title {
+    flex: 1;
+    padding: 8px;
+    font-size: 18px;
+    font-weight: 450;
+    color: var(--primary);
+  }
+
+  .topbar img.avatar {
+    width: 23px;
+    height: 23px;
+    margin-right: 7px;
+    border-radius: 6px;
+    object-fit: cover;
+  }
+
+  /* ================== Main Area ================== */
+  main {
+    flex: 1;
+    overflow: auto;
+    padding: 12px;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0 auto;
+    max-width: 800px;
+  }
+
+  /* ================== Profile ================== */
+  .profile {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -37px;  /* overlap */
+    margin-bottom: 8px; /* small gap */
+  }
+
+
+  /* ================== Transaction Card ================== */
+  .card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 18px;
+    margin-top: 20px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    position: relative;
+  }
+
+  .to-name {
+    font-size: 16px;
+  }
+
+  .amount {
+    font-size: 30px;
+    font-weight: 999;
+    color: var(--primary);
+    font-family: 'MyCustomFont';
+  }
+
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--primary);
+  }
+
+  .status img {
+    width: 12px;
+    height: 12px;
+    margin-right: 5px;
+  }
+
+  .illustration {
+    width: 100%;
+    max-width: 250px;
+    object-fit: contain;
+  }
+
+  /* ================== Details Block ================== */
+  .details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .row .label {
+    flex: 1;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .row .value {
+    font-size: 12px;
+    color: var(--primary);
+  }
+
+  .small-values {
+    display: flex;
+    flex-direction: column;    
+    
+  }
+
+
+  /* ================== Help Block ================== */
+  .help {
+    padding: 12px;
+    background: var(--card-bg);
+    border-radius: 8px;
+  }
+
+  .help .q {
+    font-size: 14px;
+    font-weight: 400;
+    margin-top: 5px;
+  }
+
+  .help .hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 15px;
+    margin-bottom: 5px;
+  }
+
+  /* ================== Bottom Actions ================== */
+  .actions {
+    display: flex;
+    background: transparent;
+  }
+
+  .action {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px;
+    background: #ffffff;
+    cursor: pointer;
+  }
+
+  .action img {
+    width: 25px;
+    height: 25px;
+  }
+
+  .action .txt {
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  /* ================== Responsive ================== */
+  @media (max-width: 480px) {
+    .amount {
+      font-size: 26px;
+    }
+
+    .profile img {
+      width: 40px;
+      height: 40px;
+    }
+  }
+</style>
+</head>
+<body>
+  <header class="topbar">
+  <img id="imageview1" class="icon" src="images/back.png" alt="back" style="cursor:pointer;"/>
+    <div id="textview1" class="title">Transaction Details</div>
+    <img id="imageview2" class="avatar" src="images/contact.png" alt="user"/>
+  </header>
+
+  <main>
+    <div class="container">
+      <!-- First round card with circle image floating -->
+      <section id="linear_first_round" class="card">
+        <div id="linear36" class="profile">
+          <img id="circleimageview2" src="images/uba.png" alt="profile"/>
+        </div>
+
+  <div id="textview4" class="to-name"></div>
+  <div id="amount" class="amount"></div>
+
+        <div id="linear12" class="status">
+          <img id="imageview7" src="images/good.png">
+          <div id="textview35">Successful</div>
+        </div>
+
+        <img id="imageview12" class="illustration" src="images/guard.png" alt="illustration"/>
+
+        <div id="linear13" style="width:100%;">
+          <div id="linear14" class="row">
+            <div id="textview6" class="label">Transfer Amount</div>
+            <div id="amount2" class="value"></div>
+          </div>
+
+          <div id="linear15" class="row" style="margin: 10px 0px;">
+            <div id="textview8" class="label">Fee</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div id="textview9" class="value">₦ 0.0</div>
+              <div id="fee" class="value">₦ 10.00</div>
+            </div>
+          </div>
+
+          <div id="linear17" class="row">
+            <div id="textview12" class="label">Payment Amount</div>
+            <div id="amount3" class="value"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Second round -->
+      <section id="linear_second_round" class="details">
+        <div id="linear22" class="row">
+          <div id="textview16" class="label">Recipient Name</div>
+            <div id="accountname" class="value"></div>
+        </div>
+
+        <div id="linear23" class="row" style="margin: 0px;">
+          <div id="bank" class="label" style="text-align:right; line-height: 1;"></div>
+        </div>
+
+        <div id="linear25" class="row">
+          <div id="textview22" class="label">Session ID</div>
+          <div id="SID" class="value"></div>
+          <img id="imageview11" src="images/numbercopy.png" alt="copy" style="width:12px;height:12px;"/>
+        </div>
+
+    <img class="banner" src="images/banner.png" alt="">
+
+        <div id="linear27" class="row">
+          <div id="textview24" class="label">Completion Time</div>
+          <div id="date" class="value"></div>
+        </div>
+
+        <div id="linear28" class="row">
+          <div id="textview25" class="label">Transaction ID</div>
+          <div id="tid" class="value">032atjid99a02</div>
+          <img id="imageview5" src="images/numbercopy.png" alt="copy" style="width:12px;height:12px;"/>
+        </div>
+
+        <div id="linear29" class="row">
+          <div id="textview26" class="label">Payment Type</div>
+          <div id="textview30" class="value">Money Transfer - Bank account</div>
+        </div>
+
+        <div id="linear31" class="row">
+          <div id="textview27" class="label">Payment Method</div>
+          <div id="textview31" class="value">Balance</div>
+        </div>
+      </section>
+
+      <!-- Third round -->
+      <section id="linear_third_round" class="help">
+        <div id="textview15" class="q">Any questions about this transaction?</div>
+        <div id="textview14" class="hint">Receiver didn't get the money</div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="actions">
+    <div id="linear3" class="action" role="button">
+      <img id="imageview3" src="images/receipt-.png" alt="receipt"/>
+      <div id="textview2" class="txt">View Receipt</div>
+      <script>
+        document.getElementById('linear3').onclick = function() {
+          window.location.href = 'psharereceipt.html';
+        };
+      </script>
+    </div>
+    <div id="linear4" class="action" role="button">
+      <img id="imageview4" src="images/dispute.png" alt="message"/>
+      <div id="textview3" class="txt">Report a Dispute</div>
+    </div>
+  </footer>
+<script>
+  // Load beneficiary name, bank, account number, amount, completion time, and session ID from localStorage and update receipt
+  document.addEventListener('DOMContentLoaded', function() {
+    // Map bank names to icon filenames
+    const bankIcons = {
+      'Access Bank': 'access.png',
+      'UBA': 'uba.png',
+      'GTBank': 'gtbank.png',
+      'First Bank': 'firstbank.png',
+      'Zenith Bank': 'zenith.png',
+      'Opay': 'opay.png',
+      'PalmPay': 'palmpay.png',
+      'Kuda': 'kudabank.png',
+      'Wema Bank': 'wema.png',
+      'Fidelity Bank': 'fidelity.png',
+      'Union Bank': 'union.png',
+      'Sterling Bank': 'sterling.png',
+      'Ecobank': 'ecobank.png',
+      'Stanbic IBTC': 'stanbic.png',
+      'Providus Bank': 'providus.png',
+      'Jaiz Bank': 'jaiz.png',
+      'Heritage Bank': 'heritage.png',
+      'Unity Bank': 'unity.png',
+      'Keystone Bank': 'keystone.png',
+      'SunTrust Bank': 'suntrust.png',
+      'Globus Bank': 'globus.png',
+      'Parallex Bank': 'parallex.png',
+      'Titan Trust Bank': 'titan.png',
+      'FCMB': 'fcmb.png',
+      'Paga': 'paga.png',
+      'Other': 'default.jpg'
+    };
+    try {
+      var data = JSON.parse(localStorage.getItem('receiptData'));
+      // Set bank logo if available
+      var bankLogo = document.getElementById('circleimageview2');
+      var bankName = data && data.beneficiaryBank ? data.beneficiaryBank : '';
+      var iconFile = bankIcons[bankName] || 'default.jpg';
+      if (bankLogo) {
+        bankLogo.src = 'images/' + iconFile;
+        bankLogo.onerror = function() { this.src = 'images/default.jpg'; };
+      }
+      if (data) {
+        if (data.beneficiaryName) {
+          document.getElementById('accountname').textContent = data.beneficiaryName;
+          document.getElementById('textview4').textContent = 'Transfer To ' + data.beneficiaryName;
+        }
+        if (data.beneficiaryBank && data.beneficiaryAcctNo) {
+          document.getElementById('bank').textContent = data.beneficiaryBank + ' | ' + data.beneficiaryAcctNo;
+        }
+        if (data.amount) {
+          // Always show two decimal places for the amount
+          var formattedAmount = Number(data.amount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+          document.getElementById('amount').textContent = '₦' + formattedAmount;
+          document.getElementById('amount2').textContent = '₦' + formattedAmount;
+          document.getElementById('amount3').textContent = '₦' + formattedAmount;
+        }
+        // Set completion time to current time
+  var dateStr = data.date || '';
+  document.getElementById('date').textContent = dateStr;
+        // Set session ID (single line, always 30 digits)
+        if (data.sessionId) {
+          document.getElementById('SID').textContent = data.sessionId;
+        }
+      }
+    } catch (e) {
+      // fallback: leave blank or log error
+    }
+  });
+  // Back arrow navigation
+  document.getElementById('imageview1').onclick = function() {
+    window.history.back();
+  };
+</script>
+</body>
+</html>

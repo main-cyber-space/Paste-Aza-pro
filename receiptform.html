@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Generate Receipt</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background:#f9f9f9;
+      margin:0;
+      padding:20px;
+    }
+    form {
+      max-width:500px;
+      margin:auto;
+      background:#fff;
+      padding:20px;
+      border-radius:8px;
+      box-shadow:0 0 10px rgba(0,0,0,0.1);
+    }
+    .label {
+      margin-top:15px;
+      font-weight:bold;
+    }
+    input,select,button {
+      width:100%;
+      padding:10px;
+      margin-top:5px;
+      border:1px solid #ccc;
+      border-radius:6px;
+      font-size:14px;
+    }
+    button {
+      background:#40196D;
+      color:#fff;
+      font-weight:bold;
+      border:none;
+      cursor:pointer;
+    }
+    button:hover {
+      background:#2e1250;
+    }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center;">Generate Receipt</h2>
+  <form id="receiptForm">
+    <div class="label">Amount:</div>
+    <input type="text" id="amount" name="amount" required placeholder="0.00">
+
+    <div class="label">Sender's Name:</div>
+    <input type="text" id="senderName" name="senderName" required>
+
+    <div class="label">Sender's Account No:</div>
+    <input type="tel" id="senderAccount" name="senderAccount" maxlength="10" required>
+
+    <div class="label">Receiver's Name:</div>
+    <input type="text" id="receiverName" name="receiverName" required>
+
+    <div class="label">Receiver's Account No:</div>
+    <input type="tel" id="receiverAccount" name="receiverAccount" maxlength="10" required>
+
+    <div class="label">Receiver's Bank:</div>
+    <select id="receiverBank" name="receiverBank" required>
+      <option>Access Bank</option>
+      <option>Ecobank</option>
+      <option>FCMB</option>
+      <option>Fairmoney</option>
+      <option>Fidelity Bank</option>
+      <option>First Bank</option>
+      <option>GTBank</option>
+      <option>Keystone Bank</option>
+      <option>Kuda MFB</option>
+      <option>Moniepoint</option>
+      <option>Opay</option>
+      <option>Paga</option>
+      <option>Palmpay</option>
+      <option>Polaris Bank</option>
+      <option>Stanbic IBTC</option>
+      <option>Union Bank</option>
+      <option>UBA</option>
+      <option>Unity Bank</option>
+      <option>Wema Bank</option>
+      <option>Zenith Bank</option>
+      <!-- Add more banks if you want -->
+    </select>
+
+    <div class="label">Description:</div>
+    <select id="description" name="description" required>
+      <option>Gift</option>
+      <option>Food</option>
+      <option>Transport</option>
+      <option>Utilities</option>
+      <option>Clothing</option>
+      <option>School Fees</option>
+      <option>House Rent</option>
+      <option>Medical</option>
+      <option>Entertainment</option>
+      <option>Travel</option>
+      <option>Electronics</option>
+      <option>Salary</option>
+      <option>Loan Repayment</option>
+      <option>Investment</option>
+      <option>Charity</option>
+      <option>Maintenance</option>
+      <option>Internet</option>
+      <option>Groceries</option>
+      <option>Subscription</option>
+      <option>Others</option>
+    </select>
+
+    <div class="label">Date:</div>
+    <input type="date" id="date" name="date" required>
+
+    <div class="label">Time:</div>
+    <input type="time" id="time" name="time" required>
+
+    <button type="submit">Generate Receipt</button>
+  </form>
+
+  <script>
+    const amountInput = document.getElementById("amount");
+
+    // Format input as user types (with commas + always .00)
+    amountInput.addEventListener("input", () => {
+      let value = amountInput.value.replace(/,/g, "").replace(/[^\d.]/g, ""); 
+      if (value) {
+        let num = parseFloat(value);
+        if (isNaN(num)) {
+          amountInput.value = "";
+          return;
+        }
+        amountInput.value = num.toLocaleString("en-NG", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+      } else {
+        amountInput.value = "";
+      }
+    });
+
+    // Save form data to localStorage and redirect
+    document.getElementById("receiptForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      let cleanAmount = amountInput.value.replace(/,/g, "");
+
+      const receiptData = {
+        amount: cleanAmount,
+        sender: document.getElementById("senderName").value,
+        senderAccount: document.getElementById("senderAccount").value,
+        beneficiary: document.getElementById("receiverName").value,
+        account: document.getElementById("receiverAccount").value,
+        bank: document.getElementById("receiverBank").value,
+        description: document.getElementById("description").value,
+        date: document.getElementById("date").value + " " + document.getElementById("time").value
+      };
+
+      localStorage.setItem("receiptData", JSON.stringify(receiptData));
+      window.location.href = "receipt.html";
+    });
+  </script>
+</body>
+</html>
