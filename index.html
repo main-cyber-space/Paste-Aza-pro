@@ -122,7 +122,7 @@
       renderer: "svg",
       loop: true,
       autoplay: true,
-      path: "https://assets1.lottiefiles.com/packages/lf20_j1adxtyb.json" // sample cheat/alert animation
+      path: "https://assets1.lottiefiles.com/packages/lf20_j1adxtyb.json"
     });
     document.body.style.overflow="hidden";
   }
@@ -149,7 +149,78 @@
     });
   }
 
-  // Keep your token validation + activation here
+  // --- Token Validation ---
+  function validateTokenFormat(token, uid) {
+    if (!token.startsWith('A' + uid)) return {ok:false};
+
+    const rest = token.slice(('A' + uid).length);
+    const cycles = {
+      7: {W:"KPACTW", M:"KPACTM", U:"KPACTU"},
+      8: {W:"BKPACTW", M:"CKPACTM", U:"DKPACTU"},
+      9: {W:"EKPACTW", M:"FKPACTM", U:"GKPACTU"},
+      10:{W:"HKPACTW", M:"IKPACTM", U:"JKPACTU"},
+      5: {W:"LKPACTW", M:"MKPACTM", U:"NKPACTU"},
+      6: {W:"OKPACTW", M:"PKPACTM", U:"QKPACTU"},
+    };
+
+    const match = rest.match(/^(\d+)([A-Z]+)$/);
+    if (!match) return {ok:false};
+    const digits = match[1];
+    const suffix = match[2];
+    const len = digits.length;
+
+    const cycle = cycles[len];
+    if (!cycle) return {ok:false};
+
+    let plan=null, days=0;
+    if (digits.split('').every(d=>d===digits[0])) {
+      if (suffix===cycle.W){plan='week';days=7;}
+      if (suffix===cycle.M){plan='month';days=30;}
+      if (suffix===cycle.U){plan='unlimited';days=Infinity;}
+    }
+    if (!plan) return {ok:false};
+
+    return {ok:true, plan, days};
+  }
+
+  function checkStoredLicense() {
+    const token = localStorage.getItem('licenseToken');
+    const uid = getOrCreateUID();
+    if (!token) return {valid:false};
+    const parsed = validateTokenFormat(token, uid);
+    if (!parsed.ok) return {valid:false};
+    if (parsed.plan==='unlimited') return {valid:true, plan:'unlimited', expiry:'Never'};
+
+    const startIso = localStorage.getItem('licenseStart');
+    if (!startIso) return {valid:false};
+    const startDate = new Date(startIso);
+    const expiry = new Date(startDate);
+    expiry.setDate(expiry.getDate()+parsed.days);
+    return {valid:new Date()<=expiry, plan:parsed.plan, expiry:expiry.toISOString()};
+  }
+
+  function showActivationPopup(page){
+    const uid = getOrCreateUID();
+    Swal.fire({
+      title:'Enter License Token',
+      html:'<input id="swToken" class="swal2-input" placeholder="Paste token here">'+
+           '<div style="margin-top:10px"><b>Your UID:</b><br>'+uid+'</div>',
+      confirmButtonText:'Activate',
+      showCancelButton:true,
+      preConfirm:()=>document.getElementById('swToken').value
+    }).then(res=>{
+      if(res.isConfirmed){
+        const token = res.value.trim();
+        const fmt = validateTokenFormat(token, uid);
+        if(!fmt.ok){ Swal.fire('Invalid','Wrong or expired token','error'); return; }
+        localStorage.setItem('licenseToken', token);
+        localStorage.setItem('licenseStart', new Date().toISOString());
+        Swal.fire('Activated','Redirecting...','success').then(()=>window.location.href=page);
+      }
+    });
+  }
+
+  // --- Bank Button Click ---
   function onBankClick(e){
     const page = e.currentTarget.dataset.page;
     const check = checkStoredLicense();
@@ -157,7 +228,24 @@
     showActivationPopup(page);
   }
 
-  // ... (rest of your license functions from earlier remain unchanged)
+  // --- Theme toggle ---
+  const themeBtn=document.getElementById('themeToggle');
+  function setTheme(){ 
+    if(localStorage.getItem('theme')==='dark'){
+      document.body.classList.add('dark');
+      themeBtn.innerHTML='<i class="fa-solid fa-sun"></i>';
+    }else{
+      document.body.classList.remove('dark');
+      themeBtn.innerHTML='<i class="fa-solid fa-moon"></i>';
+    }
+  }
+  setTheme();
+  themeBtn.onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');setTheme();};
+
+  document.getElementById('statusBtn').onclick=()=>location.href='status.html';
+  document.getElementById('backArrow').onclick=()=>location.href='index.html';
+
+  getOrCreateUID();
 </script>
 </body>
 </html>
