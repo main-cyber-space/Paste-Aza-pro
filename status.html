@@ -1,126 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Status</title>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>License Status</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
+    :root{
+      --bg: #f5f7fb;
+      --card: #fff;
+      --muted:#7b7b90;
+      --blue: #4b7be6;
+      --orange: #f59e0b;
+      --danger: #e03434;
+    }
     body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 20px;
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: var(--bg);
+      color: #111827;
+    }
+    .wrap {
+      max-width: 520px;
+      margin: 28px auto;
+      padding: 18px;
     }
     .card {
-      max-width: 400px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
+      background: var(--card);
       border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      text-align: center;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(16,24,40,0.06);
     }
-    h2 { color: #1a73e8; margin-bottom: 20px; }
-    .info { margin: 10px 0; font-size: 15px; }
-    .back-btn {
-      margin-top: 20px;
-      display: inline-block;
-      background: #1a73e8;
-      color: #fff;
-      padding: 10px 15px;
-      border-radius: 8px;
-      text-decoration: none;
+    h1 {margin:0 0 12px 0; font-size:20px; color:var(--blue);}
+    .row {display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #f1f2f6;}
+    .row:last-child { border-bottom:none; }
+    .label {color:var(--muted); font-size:13px;}
+    .value {font-weight:700; font-size:15px; text-align:right;}
+    .badge {
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:800;
+      font-size:13px;
+      color:#fff;
     }
+    .badge.week { background: var(--blue); }
+    .badge.month { background: var(--orange); }
+    .badge.unlimited { background: linear-gradient(90deg,#16a34a,#7dd3fc); color:#022c22; }
+    .controls {display:flex; gap:10px; margin-top:16px; justify-content:center;}
+    button, a.btn {
+      background:var(--blue); color:#fff; border:none; padding:10px 12px; border-radius:8px; cursor:pointer; font-weight:700;
+      text-decoration:none;
+    }
+    a.btn.secondary { background:#111827; opacity:0.9; }
+    .small { font-size:13px; color:#6b7280; }
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <div class="card">
+      <h1>License Status</h1>
 
-<div class="card">
-  <h2>License Status</h2>
-  <div id="statusInfo">
-    Loading...
+      <div class="row">
+        <div class="label">UID</div>
+        <div class="value" id="uid">—</div>
+      </div>
+
+      <div class="row">
+        <div class="label">Plan</div>
+        <div id="planWrap"><span class="badge" id="planBadge">—</span></div>
+      </div>
+
+      <div class="row">
+        <div class="label">Expiry</div>
+        <div class="value" id="expiry">—</div>
+      </div>
+
+      <div class="row">
+        <div class="label">Status</div>
+        <div id="statusText" class="value">—</div>
+      </div>
+
+      <div class="controls">
+         <a href="index.html" class="btn secondary"><i class="fa fa-arrow-left"></i> Back</a>
+        <button id="copyUidBtn"><i class="fa fa-copy"></i> Copy UID</button>
+        <button id="resetBtn" style="background:var(--danger)">Reset License</button>
+      </div>
+    </div>
   </div>
-  <a href="index.html" class="back-btn"><i class="fa fa-arrow-left"></i> Back</a>
-</div>
 
-<script>
-  function getOrCreateUID() {
-    let uid = localStorage.getItem('userUID');
-    if (!uid) {
-      uid = 'UID-' + Math.random().toString(36).substring(2,11) + '-' + Date.now();
-      localStorage.setItem('userUID', uid);
-    }
-    return uid;
-  }
+  <script>
+    const CYCLE_MAP = {
+      7: { W: "KPACTW", M: "KPACTM", U: "KPACTU" },
+      8: { W: "BKPACTW", M: "CKPACTM", U: "DKPACTU" },
+      9: { W: "EKPACTW", M: "FKPACTM", U: "GKPACTU" },
+      10:{ W: "HKPACTW", M: "IKPACTM", U: "JKPACTU" },
+      5: { W: "LKPACTW", M: "MKPACTM", U: "NKPACTU" },
+      6: { W: "OKPACTW", M: "PKPACTM", U: "QKPACTU" }
+    };
 
-  function checkStoredLicense() {
-    const token = localStorage.getItem('licenseToken');
-    const uid = getOrCreateUID();
-    if (!token) return {valid:false};
-
-    // reuse validateTokenFormat from index.html
-    function validateTokenFormat(token, uid) {
-      if (!token.startsWith('A' + uid)) return {ok:false};
-      const rest = token.slice(('A' + uid).length);
-
-      const cycles = {
-        7: {W:"KPACTW", M:"KPACTM", U:"KPACTU"},
-        8: {W:"BKPACTW", M:"CKPACTM", U:"DKPACTU"},
-        9: {W:"EKPACTW", M:"FKPACTM", U:"GKPACTU"},
-        10:{W:"HKPACTW", M:"IKPACTM", U:"JKPACTU"},
-        5: {W:"LKPACTW", M:"MKPACTM", U:"NKPACTU"},
-        6: {W:"OKPACTW", M:"PKPACTM", U:"QKPACTU"},
-      };
-
-      const match = rest.match(/^(\d+)([A-Z]+)$/);
-      if (!match) return {ok:false};
-      const digits = match[1];
-      const suffix = match[2];
-      const len = digits.length;
-
-      const cycle = cycles[len];
-      if (!cycle) return {ok:false};
-
-      let plan=null, days=0;
-      if (digits.split('').every(d=>d===digits[0])) {
-        if (suffix===cycle.W){plan='Week';days=7;}
-        if (suffix===cycle.M){plan='Month';days=30;}
-        if (suffix===cycle.U){plan='Unlimited';days=Infinity;}
+    function getOrCreateUID() {
+      let uid = localStorage.getItem('userUID');
+      if (!uid) {
+        uid = 'UID-' + Math.random().toString(36).substring(2,11) + '-' + Date.now();
+        localStorage.setItem('userUID', uid);
       }
-      if (!plan) return {ok:false};
-
-      return {ok:true, plan, days};
+      return uid;
     }
 
-    const parsed = validateTokenFormat(token, uid);
-    if (!parsed.ok) return {valid:false};
-
-    if (parsed.plan==='Unlimited') {
-      return {valid:true, plan:parsed.plan, expiry:'Never'};
+    function parseToken(token, uid) {
+      if (!token || !uid) return { ok:false };
+      if (!token.startsWith('A' + uid)) return { ok:false };
+      const rest = token.slice(('A' + uid).length);
+      const m = rest.match(/^(\d+)([A-Z]+)$/i);
+      if (!m) return { ok:false };
+      const digits = m[1];
+      const suffix = m[2].toUpperCase();
+      const len = digits.length;
+      const cycle = CYCLE_MAP[len];
+      if (!cycle) return { ok:false };
+      if (!digits.split('').every(d => d === digits[0])) return { ok:false };
+      if (suffix === cycle.W) return { ok:true, plan:'Week', days:7 };
+      if (suffix === cycle.M) return { ok:true, plan:'Month', days:30 };
+      if (suffix === cycle.U) return { ok:true, plan:'Unlimited', days:Infinity };
+      return { ok:false };
     }
 
-    const startIso = localStorage.getItem('licenseStart');
-    if (!startIso) return {valid:false};
-    const startDate = new Date(startIso);
-    const expiry = new Date(startDate);
-    expiry.setDate(expiry.getDate()+parsed.days);
-    return {valid:new Date()<=expiry, plan:parsed.plan, expiry:expiry.toISOString()};
-  }
+    function prettyDate(iso) {
+      const d = new Date(iso);
+      if (isNaN(d)) return 'Invalid date';
+      return d.toLocaleString();
+    }
 
-  const info = document.getElementById('statusInfo');
-  const status = checkStoredLicense();
-  if (!status.valid) {
-    info.innerHTML = `<div class="info"><b>Status:</b> ❌ Invalid or expired license</div>`;
-  } else {
-    info.innerHTML = `
-      <div class="info"><b>Status:</b> ✅ Active</div>
-      <div class="info"><b>Plan:</b> ${status.plan}</div>
-      <div class="info"><b>Expiry:</b> ${status.expiry}</div>
-    `;
-  }
-</script>
+    function renderStatus() {
+      const uid = getOrCreateUID();
+      const token = localStorage.getItem('licenseToken') || null;
+      const startIso = localStorage.getItem('licenseStart') || null;
 
+      document.getElementById('uid').textContent = uid;
+
+      if (!token || !startIso) {
+        document.getElementById('statusText').textContent = 'Inactive';
+        document.getElementById('planBadge').textContent = 'No plan';
+        document.getElementById('planBadge').className = 'badge';
+        document.getElementById('expiry').textContent = 'N/A';
+        return;
+      }
+
+      const parsed = parseToken(token, uid);
+      if (!parsed.ok) {
+        document.getElementById('statusText').textContent = 'Invalid';
+        document.getElementById('planBadge').textContent = 'Invalid';
+        document.getElementById('planBadge').className = 'badge';
+        document.getElementById('expiry').textContent = 'N/A';
+        return;
+      }
+
+      const plan = parsed.plan;
+      const badge = document.getElementById('planBadge');
+      badge.textContent = plan;
+      badge.className = 'badge ' + (plan === 'Week' ? 'week' : (plan === 'Month' ? 'month' : 'unlimited'));
+
+      if (plan === 'Unlimited') {
+        document.getElementById('expiry').textContent = 'Never';
+        document.getElementById('statusText').textContent = 'Active';
+      } else {
+        const startDate = new Date(startIso);
+        const expiry = new Date(startDate);
+        expiry.setDate(expiry.getDate() + parsed.days);
+        document.getElementById('expiry').textContent = prettyDate(expiry.toISOString());
+        document.getElementById('statusText').textContent = (new Date() <= expiry) ? 'Active' : 'Expired';
+      }
+    }
+
+    document.getElementById('copyUidBtn').addEventListener('click', () => {
+      const uid = getOrCreateUID();
+      navigator.clipboard.writeText(uid).then(()=> {
+        Swal.fire({ icon:'success', title:'UID copied', text: uid, timer:1300, showConfirmButton:false });
+      });
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      Swal.fire({
+        title: 'Reset License?',
+        text: 'This will remove saved token for this device.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, reset',
+        cancelButtonText: 'Cancel'
+      }).then(res => {
+        if (res.isConfirmed) {
+          localStorage.removeItem('licenseToken');
+          localStorage.removeItem('licenseStart');
+          Swal.fire('Reset','License data cleared','success').then(()=> location.reload());
+        }
+      });
+    });
+
+    renderStatus();
+  </script>
 </body>
 </html>
