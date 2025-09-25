@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Transaction Receipt</title>
   <!-- SweetAlert -->
@@ -15,7 +15,6 @@
       font-family: Arial, sans-serif;
       background: #F8F8FB;
       overflow-x: hidden;
-      
     }
 
     /* ===== Header ===== */
@@ -30,35 +29,26 @@
       left: 0;
       z-index: 1000;
     }
-    .header img {
-      height: 20px;
-      margin-right: 8px;
-    }
-    .header-text {
-      font-size: 16px;
-      color: #616161;
-      margin-left: 10px;
-    }
+    .header img { height: 20px; margin-right: 8px; }
+    .header-text { font-size: 16px; color: #616161; margin-left: 10px; }
 
     /* ===== Content ===== */
     .content {
-      margin-top: 60px; /* push down under header */
+      margin-top: 60px;
       padding: 10px;
       display: flex;
       justify-content: center;
     }
     .receipt-card {
-    width: 97%;
-    max-width: 400px;
-    background: url("images/background.png");
-    background-size: cover;
-    padding: 4px;
-    height: 490px;
-    background-repeat: no-repeat;
-    /* Dotted outline removed as requested */
+      width: 97%;
+      max-width: 400px;
+      background: url("images/background.png");
+      background-size: cover;
+      padding: 4px;
+      height: 490px;
+      background-repeat: no-repeat;
     }
     .inner-card {
-       
       padding: 12px;
       display: flex;
       flex-direction: column;
@@ -74,20 +64,9 @@
       display: flex;
       align-items: center;
       justify-content: space-around;
-      
     }
-    .receipt-title img {
-      height: 28px;
-      margin-right: 60px;
-      
-    }
-    .receipt-title div {
-      font-size: 14px;
-      font-weight: I can bold;
-      color: #000;
-      margin-left: 20px;
-      
-    }
+    .receipt-title img { height: 28px; margin-right: 60px; }
+    .receipt-title div { font-size: 14px; font-weight: bold; color: #000; margin-left: 20px; }
 
     /* ===== Transaction Box ===== */
     .transaction-box {
@@ -97,37 +76,20 @@
       text-align: center;
       padding-bottom: 9px;
     }
-    .amount {
-      font-size: 20px;
-      font-weight: bold;
-      color: #00B876;
-    }
-    .status {
-      font-size: 16px;
-      color: #000;
-      padding-top: 5px;
-    }
-    .date {
-      font-size: 9px;
-      color: #9E9E9E;
-      margin-top: 5px;
-    }
-    .divider {
-    
-      border-bottom: 1px solid #E0E0E0;
-      width: 100%;
+    .amount { font-size: 20px; font-weight: bold; color: #00B876; }
+    .status { font-size: 16px; color: #000; padding-top: 5px; }
+    .date { font-size: 9px; color: #9E9E9E; margin-top: 5px; }
+    .divider { border-bottom: 1px solid #E0E0E0; width: 100%; }
+    .tiny-divider {
+      border-top: 2px dotted #ccc;
+      margin: 6px 0;
     }
 
     /* ===== Info Rows ===== */
-    .row {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 17px;
-      font-size: 12px;
-    }
+    .row { display: flex; justify-content: space-between; margin-top: 17px; font-size: 12px; }
     .label { color: #9E9E9E; }
     .value { color: #424242; text-align: right; }
-
+    
     /* ===== Note ===== */
     .footer-note {
       font-size: 10px;
@@ -135,7 +97,6 @@
       margin-top: 30px;
       line-height: 1.2;
     }
-
     /* ===== Footer ===== */
     .footer {
       position: fixed;
@@ -144,26 +105,14 @@
       right: 0;
       height: 55px;
       background: #fff;
-      
       display: flex;
       align-items: center;
-      justify-content: space-around;<!--  -->
+      justify-content: space-around;
       z-index: 1000;
     }
-    .footer div {
-      display: flex;
-      align-items: center;
-      font-size: 14px;
-      color: #00B876;
-    }
-    .footer img {
-      height: 20px;
-      margin-right: 6px;
-    }
-    .separator {
-      font-size: 20px;
-      color: #9E9E9E;
-    }
+    .footer div { display: flex; align-items: center; font-size: 14px; color: #00B876; }
+    .footer img { height: 20px; margin-right: 6px; }
+    .separator { font-size: 20px; color: #9E9E9E; }
   </style>
 </head>
 <body>
@@ -178,12 +127,8 @@
   <div id="pageLoader" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#fff;z-index:2000;display:flex;align-items:center;justify-content:center;">
     <img src="images/load.jpg" id="loaderImg" style="width:60px;height:60px;animation:bounce 0.7s infinite alternate;" alt="Loading...">
   </div>
-
   <style>
-    @keyframes bounce {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(-30px); }
-    }
+    @keyframes bounce { 0% { transform: translateY(0); } 100% { transform: translateY(-30px); } }
   </style>
 
   <!-- Content -->
@@ -202,20 +147,16 @@
           <div class="date" id="receiptDate"></div>
         </div>
 
-        <div class="divider"></div>
+        <div class="tiny-divider"></div>
 
         <div class="row">
           <div class="label">Recipient Details</div>
-          <div class="value" id="recipientDetails">
-            <!-- Will be filled by JS -->
-          </div>
+          <div class="value" id="recipientDetails"></div>
         </div>
 
         <div class="row">
           <div class="label">Sender Details</div>
-          <div class="value" id="senderDetails">
-            <!-- Will be filled by JS -->
-          </div>
+          <div class="value" id="senderDetails"></div>
         </div>
         
         <div class="row" style="display: none;">
@@ -232,7 +173,8 @@
           <div class="label">Session ID</div>
           <div class="value">100033250309223231090103103173</div>
         </div>
-
+  
+       <div class="tiny-divider"></div>
         <div class="footer-note">
           Enjoy a better life with OPay. Get free transfers, withdrawals,<br>
           bill payments, instant loans, and good annual interest on your savings.
@@ -249,36 +191,40 @@
     <div class="separator">|</div>
     <div id="saveAsPdfBtn"><img src="images/pdf.png" alt="pdf">Share as PDF</div>
   </div>
+
+  <!-- JS -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
   <script>
-    // Dynamically fill in recipient and sender details from localStorage (opayform.html)
     document.addEventListener('DOMContentLoaded', function() {
-      // Back arrow to dashboard
       document.getElementById('returnIcon').onclick = function() {
         window.location.href = 'index.html';
       };
-      // Loader logic
+
       var loader = document.getElementById('pageLoader');
-      setTimeout(function() {
-        if(loader) loader.style.display = 'none';
-      }, 1500);
+      setTimeout(() => loader.style.display = 'none', 1500);
+
       var data = {};
-      try {
-        data = JSON.parse(localStorage.getItem('receiptData') || '{}');
-      } catch (e) {}
+      try { data = JSON.parse(localStorage.getItem('receiptData') || '{}'); } catch (e) {}
+
       // Amount
       var amountElem = document.getElementById('receiptAmount');
       if (amountElem) {
         var formattedAmount = data.amount ? '₦' + Number(data.amount).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2}) : '₦0.00';
         amountElem.textContent = formattedAmount;
       }
+
       // Date
       var dateElem = document.getElementById('receiptDate');
       if (dateElem) {
-        dateElem.textContent = data.date || new Date().toLocaleString('en-NG', { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        dateElem.textContent = data.date || new Date().toLocaleString('en-NG', {
+          year: 'numeric', month: 'short', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
+          hour12: true
+        });
       }
+
       // Recipient
       var recipient = document.getElementById('recipientDetails');
       if (recipient) {
@@ -287,44 +233,38 @@
         var acct = data.beneficiaryAcctNo || 'Account';
         recipient.innerHTML = name + '<br><span style="color:#757575;">' + bank + ' | ' + acct + '</span>';
       }
-      // Sender
+
+      // Sender (mask account number)
       var sender = document.getElementById('senderDetails');
       if (sender) {
         var sname = data.senderName || '[Sender Name]';
         var sbank = data.senderBank || 'Opay';
-        var sacct = data.senderAcctNo || 'Account';
-        sender.innerHTML = sname + '<br><span style="color:#757575;">' + sbank + ' | ' + sacct + '</span>';
+        var sacct = data.senderAcctNo || '0000000000';
+        var maskedAcct = sacct.length >= 6 ? sacct.slice(0,3) + " **** " + sacct.slice(-3) : sacct;
+        sender.innerHTML = sname + '<br><span style="color:#757575;">' + sbank + ' | ' + maskedAcct + '</span>';
       }
-      // Transaction No. (24 digits, persistent)
+
+      // Transaction No. + Session ID
       var txnNoElem = document.querySelectorAll('.row .label');
       for (var i = 0; i < txnNoElem.length; i++) {
         if (txnNoElem[i].textContent.trim() === 'Transaction No.') {
           var valueDiv = txnNoElem[i].parentElement.querySelector('.value');
-          if (valueDiv && data.transactionNo) {
-            valueDiv.textContent = data.transactionNo;
-          }
+          if (valueDiv && data.transactionNo) valueDiv.textContent = data.transactionNo;
         }
         if (txnNoElem[i].textContent.trim() === 'Session ID') {
           var valueDiv = txnNoElem[i].parentElement.querySelector('.value');
-          if (valueDiv && data.sessionId) {
-            valueDiv.textContent = data.sessionId;
-          }
+          if (valueDiv && data.sessionId) valueDiv.textContent = data.sessionId;
         }
       }
     });
 
-    // Share as Image functionality
+    // Share as Image
     document.getElementById('shareAsImageBtn').onclick = function() {
       var receipt = document.querySelector('.receipt-card');
-      setTimeout(function() { // ensure DOM is ready
-        html2canvas(receipt, {
-          backgroundColor: '#fff',
-          useCORS: true,
-          allowTaint: true,
-          logging: false,
-          scale: 2
-        }).then(function(canvas) {
-          canvas.toBlob(function(blob) {
+      setTimeout(() => {
+        html2canvas(receipt, {backgroundColor: '#fff', useCORS: true, allowTaint: true, logging: false, scale: 2})
+        .then(canvas => {
+          canvas.toBlob(blob => {
             if (window.navigator.msSaveOrOpenBlob) {
               window.navigator.msSaveOrOpenBlob(blob, 'opay-receipt.png');
             } else {
@@ -334,35 +274,25 @@
               link.href = url;
               document.body.appendChild(link);
               link.click();
-              setTimeout(function() {
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-              }, 100);
+              setTimeout(() => { document.body.removeChild(link); URL.revokeObjectURL(url); }, 100);
             }
           }, 'image/png');
         });
       }, 100);
     };
-    // Save as PDF functionality
+
+    // Save as PDF
     document.getElementById('saveAsPdfBtn').onclick = function() {
       var receipt = document.querySelector('.receipt-card');
-      setTimeout(function() {
-        html2canvas(receipt, {
-          backgroundColor: '#fff',
-          useCORS: true,
-          allowTaint: true,
-          logging: false,
-          scale: 2
-        }).then(function(canvas) {
+      setTimeout(() => {
+        html2canvas(receipt, {backgroundColor: '#fff', useCORS: true, allowTaint: true, logging: false, scale: 2})
+        .then(canvas => {
           var imgData = canvas.toDataURL('image/png');
           var pdf = new window.jspdf.jsPDF({orientation: 'portrait', unit: 'px', format: [canvas.width, canvas.height]});
           pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-          if (pdf.save) {
-            pdf.save('opay-receipt.pdf');
-          } else if (window.navigator.msSaveOrOpenBlob) {
-            pdf.output('blob').then(function(blob) {
-              window.navigator.msSaveOrOpenBlob(blob, 'opay-receipt.pdf');
-            });
+          if (pdf.save) pdf.save('opay-receipt.pdf');
+          else if (window.navigator.msSaveOrOpenBlob) {
+            pdf.output('blob').then(blob => window.navigator.msSaveOrOpenBlob(blob, 'opay-receipt.pdf'));
           }
         });
       }, 100);

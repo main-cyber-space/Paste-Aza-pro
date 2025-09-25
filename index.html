@@ -71,7 +71,7 @@
 </head>
 <body>
 
-  <!-- Block overlay (hidden until Windows detected) -->
+  <!-- Block overlay -->
   <div id="lottieBlock" style="display:none;">
     <div id="lottie"></div>
     <div>419 Cheating 😂</div>
@@ -88,15 +88,15 @@
   <div class="container">
     <h2>Choose a Bank to Generate Receipt</h2>
     <div class="banks">
-      <div class="bank-card" data-page="palmpayform.html" onclick="onBankClick(event)">
+      <div class="bank-card" data-page="palmpayform.html">
         <i class="fa-solid fa-building-columns"></i>
         <h3>PalmPay</h3>
       </div>
-      <div class="bank-card" data-page="opayform.html" onclick="onBankClick(event)">
+      <div class="bank-card" data-page="opayform.html">
         <i class="fa-solid fa-building-columns"></i>
         <h3>Opay</h3>
       </div>
-      <div class="bank-card" data-page="receiptform.html" onclick="onBankClick(event)">
+      <div class="bank-card" data-page="receiptform.html">
         <i class="fa-solid fa-building-columns"></i>
         <h3>Kuda</h3>
       </div>
@@ -117,6 +117,7 @@
       <button onclick="copyUID()">📋 Copy UID</button>
       <a href="developer.html">💬 Contact Developer</a>
       <a href="status.html" style="background:green;">🔍 View Status</a>
+      <a id="buyTokenBtn" style="background:orange;">💳 Buy Token</a>
     </div>
   </div>
 
@@ -155,17 +156,33 @@
     blockWindows();
   }
 
-  // Always show Telegram popup
-  window.onload = function() {
+  // Telegram popup once every 30 minutes
+  function showTelegramPopup() {
     Swal.fire({
       icon: 'warning',
       title: 'Join Our Telegram Channel',
       html: '<p>Stay updated and purchase your token easily.</p><a href="https://t.me/web404space" target="_blank" style="color:#1a73e8;font-weight:bold;">👉 Click Here to Join</a>',
       confirmButtonText: 'OK'
     });
+  }
+
+  window.onload = function() {
+    const lastShown = localStorage.getItem('lastTelegramPopup');
+    const now = Date.now();
+    if (!lastShown || now - lastShown > 30*60*1000) { // 30 mins
+      showTelegramPopup();
+      localStorage.setItem('lastTelegramPopup', now);
+    }
   };
 
-  // --- UID ---
+  // Buy Token button → WhatsApp
+  document.getElementById('buyTokenBtn').onclick = function() {
+    const phone = "2349020388011";
+    const message = encodeURIComponent("Hello, I want to buy a token for Paste Aza Pro.");
+    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+  };
+
+  // UID
   function getOrCreateUID() {
     let uid = localStorage.getItem('userUID');
     if (!uid) {
@@ -182,26 +199,38 @@
     });
   }
 
-  // --- Bank Button Click ---
-  function onBankClick(e){
-    const page = e.currentTarget.dataset.page;
-    const check = checkStoredLicense();
-    if (check.valid) { window.location.href = page; return; }
-    showActivationPopup(page);
-  }
+  // Bank Click Handling
+  document.querySelectorAll('.bank-card[data-page]').forEach(card=>{
+    card.addEventListener('click', e=>{
+      const page = card.dataset.page;
+      const check = checkStoredLicense();
+      if (check.valid) {
+        window.location.href = page;
+      } else {
+        showActivationPopup(page);
+      }
+    });
+  });
 
-  // --- Token Validation (same as before) ---
-  function validateTokenFormat(token, uid) {
-    if (!token.startsWith('A' + uid)) return {ok:false};
-    const rest = token.slice(('A' + uid).length);
-    const match = rest.match(/^(\d+)([A-Z]+)$/);
-    if (!match) return {ok:false};
-    return {ok:true}; // simplified for brevity
-  }
-
+  // Token Validation with Expiry
   function checkStoredLicense() {
     const token = localStorage.getItem('licenseToken');
-    if (!token) return {valid:false};
+    const start = localStorage.getItem('licenseStart');
+    const plan = localStorage.getItem('licensePlan');
+    if (!token || !start || !plan) return {valid:false};
+
+    const startDate = new Date(start);
+    const now = new Date();
+
+    let days;
+    if (plan === "week") days = 7;
+    else if (plan === "month") days = 30;
+    else if (plan === "unlimited") days = 365;
+    else return {valid:false};
+
+    const expiry = new Date(startDate.getTime() + days*24*60*60*1000);
+    if (now > expiry) return {valid:false};
+
     return {valid:true};
   }
 
@@ -209,21 +238,34 @@
     const uid = getOrCreateUID();
     Swal.fire({
       title:'Enter License Token',
-      html:'<input id="swToken" class="swal2-input" placeholder="Paste token here">'+
-           '<div style="margin-top:10px"><b>Your UID:</b><br>'+uid+'</div>',
+      html:`
+        <input id="swToken" class="swal2-input" placeholder="Paste token here">
+        <select id="swPlan" class="swal2-select" style="margin-top:10px;width:80%;">
+          <option value="week">One Week</option>
+          <option value="month">One Month</option>
+          <option value="unlimited">Unlimited</option>
+        </select>
+        <div style="margin-top:10px"><b>Your UID:</b><br>${uid}</div>
+      `,
       confirmButtonText:'Activate',
       showCancelButton:true,
-      preConfirm:()=>document.getElementById('swToken').value
+      preConfirm:()=>{
+        return {
+          token: document.getElementById('swToken').value.trim(),
+          plan: document.getElementById('swPlan').value
+        }
+      }
     }).then(res=>{
       if(res.isConfirmed){
-        localStorage.setItem('licenseToken', res.value.trim());
+        localStorage.setItem('licenseToken', res.value.token);
         localStorage.setItem('licenseStart', new Date().toISOString());
+        localStorage.setItem('licensePlan', res.value.plan);
         Swal.fire('Activated','Redirecting...','success').then(()=>window.location.href=page);
       }
     });
   }
 
-  // --- Theme toggle ---
+  // Theme toggle
   const themeBtn=document.getElementById('themeToggle');
   function setTheme(){ 
     if(localStorage.getItem('theme')==='dark'){
@@ -235,7 +277,11 @@
     }
   }
   setTheme();
-  themeBtn.onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');setTheme();};
+  themeBtn.onclick=()=>{
+    document.body.classList.toggle('dark');
+    localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');
+    setTheme();
+  };
 
   document.getElementById('statusBtn').onclick=()=>location.href='status.html';
 
