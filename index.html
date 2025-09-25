@@ -49,10 +49,27 @@
       color:#fff;
       font-size:22px;
       font-weight:bold;
+      text-align:center;
+      padding:20px;
     }
     #lottie {
       width:250px;height:250px;
       margin-bottom:20px;
+    }
+
+    /* Pricing notice */
+    .pricing {
+      margin-top:30px;
+      text-align:center;
+      font-size:16px;
+      animation: pulse 2s infinite;
+      font-weight:bold;
+      color:#e63946;
+    }
+    @keyframes pulse {
+      0%{transform:scale(1);opacity:1;}
+      50%{transform:scale(1.05);opacity:0.7;}
+      100%{transform:scale(1);opacity:1;}
     }
   </style>
 </head>
@@ -61,7 +78,7 @@
   <!-- Block overlay (hidden until Windows detected) -->
   <div id="lottieBlock" style="display:none;">
     <div id="lottie"></div>
-    <div>419 Cheating</div>
+    <div>🚫 419 Cheating Blocked 😂</div>
   </div>
 
   <div class="header-row">
@@ -88,6 +105,10 @@
         <i class="fa-solid fa-building-columns"></i>
         <h3>Kuda</h3>
       </div>
+      <div class="bank-card" onclick="window.open('https://t.me/web404space','_blank')">
+        <i class="fa-brands fa-telegram"></i>
+        <h3>Channel</h3>
+      </div>
     </div>
 
     <div class="actions">
@@ -95,16 +116,37 @@
       <a href="developer.html">💬 Contact Developer</a>
       <a href="status.html" style="background:green;">🔍 View Status</a>
     </div>
+
+    <div class="pricing">
+      🔑 Purchase License Token: <br>
+      ₦3,000 (1 Week) | ₦6,500 (1 Month) | ₦12,000 (Unlimited)
+    </div>
   </div>
 
 <script>
-  // Block inspect tools and right-click
-  document.onkeydown = function(e){
-    if(e.keyCode==123 || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) || (e.ctrlKey && e.key.toUpperCase()=='U')) {
-      return false;
+  // --- Disable inspect, copy, long-press ---
+  document.addEventListener("contextmenu", e => e.preventDefault());
+  document.addEventListener("keydown", e => {
+    if (e.keyCode === 123) e.preventDefault();
+    if (e.ctrlKey && ["I","J","C","U"].includes(e.key.toUpperCase())) e.preventDefault();
+  });
+  document.addEventListener("selectstart", e => e.preventDefault());
+  document.addEventListener("copy", e => e.preventDefault());
+  document.addEventListener("cut", e => e.preventDefault());
+  document.addEventListener("paste", e => e.preventDefault());
+
+  // Detect DevTools (desktop + mobile remote debugging)
+  setInterval(function(){
+    const before = new Date().getTime();
+    debugger;
+    const after = new Date().getTime();
+    if (after - before > 100) {
+      document.body.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-size:24px;font-weight:bold;color:red;background:#000;">
+          🚫 Page Blocked<br>Inspect/Debug Detected 🔒
+        </div>`;
     }
-  };
-  document.addEventListener('contextmenu', e => e.preventDefault());
+  }, 1000);
 
   // Detect platform
   function detectPlatform() {
@@ -152,7 +194,6 @@
   // --- Token Validation ---
   function validateTokenFormat(token, uid) {
     if (!token.startsWith('A' + uid)) return {ok:false};
-
     const rest = token.slice(('A' + uid).length);
     const cycles = {
       7: {W:"KPACTW", M:"KPACTM", U:"KPACTU"},
@@ -162,16 +203,13 @@
       5: {W:"LKPACTW", M:"MKPACTM", U:"NKPACTU"},
       6: {W:"OKPACTW", M:"PKPACTM", U:"QKPACTU"},
     };
-
     const match = rest.match(/^(\d+)([A-Z]+)$/);
     if (!match) return {ok:false};
     const digits = match[1];
     const suffix = match[2];
     const len = digits.length;
-
     const cycle = cycles[len];
     if (!cycle) return {ok:false};
-
     let plan=null, days=0;
     if (digits.split('').every(d=>d===digits[0])) {
       if (suffix===cycle.W){plan='week';days=7;}
@@ -179,7 +217,6 @@
       if (suffix===cycle.U){plan='unlimited';days=Infinity;}
     }
     if (!plan) return {ok:false};
-
     return {ok:true, plan, days};
   }
 
@@ -190,7 +227,6 @@
     const parsed = validateTokenFormat(token, uid);
     if (!parsed.ok) return {valid:false};
     if (parsed.plan==='unlimited') return {valid:true, plan:'unlimited', expiry:'Never'};
-
     const startIso = localStorage.getItem('licenseStart');
     if (!startIso) return {valid:false};
     const startDate = new Date(startIso);
