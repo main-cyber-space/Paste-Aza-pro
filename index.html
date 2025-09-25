@@ -1,24 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Paste Aza Pro</title>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    :root {
-      --bg-light: #f5f5f5;
-      --bg-dark: #121212;
-      --text-light: #333;
-      --text-dark: #fff;
-      --card-light: #fff;
-      --card-dark: #1e1e1e;
-      --primary: #1a73e8;
-    }
-    body {margin:0;font-family:Arial, sans-serif;background:var(--bg-light);color:var(--text-light);transition:0.3s;}
-    body.dark {background:var(--bg-dark);color:var(--text-dark);}
+    :root { --bg-light:#f5f5f5; --bg-dark:#121212; --text-light:#333; --text-dark:#fff; --card-light:#fff; --card-dark:#1e1e1e; --primary:#1a73e8; }
+    body{margin:0;font-family:Arial, sans-serif;background:var(--bg-light);color:var(--text-light);transition:0.3s;}
+    body.dark{background:var(--bg-dark);color:var(--text-dark);}
     .container{padding:20px;}
     h2{text-align:center;margin-bottom:20px;color:var(--primary);}
     .banks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;}
@@ -33,45 +25,14 @@
     .header-row .title{flex:1;text-align:center;}
     .header-row .right-controls{display:flex;gap:8px;align-items:center;}
     .small-btn{background:transparent;border:none;color:#fff;padding:8px;border-radius:20px;cursor:pointer;font-size:16px;}
-
-    /* Lottie container for Windows block */
-    #lottieBlock {
-      position:fixed;
-      top:0;left:0;
-      width:100%;height:100%;
-      background:#000;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      z-index:9999;
-      color:#fff;
-      font-size:22px;
-      font-weight:bold;
-    }
-    #lottie {
-      width:250px;height:250px;
-      margin-bottom:20px;
-    }
-
-    /* License pricing section */
-    .pricing {
-      margin-top:40px;
-      text-align:center;
-      font-size:16px;
-      font-weight:bold;
-      animation: blink 2s infinite;
-    }
-    @keyframes blink {
-      0% {color:#1a73e8;}
-      50% {color:#e91e63;}
-      100% {color:#1a73e8;}
-    }
+    #lottieBlock{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;font-size:22px;font-weight:bold;}
+    #lottie{width:250px;height:250px;margin-bottom:20px;}
+    .pricing{margin-top:40px;text-align:center;font-size:16px;font-weight:bold;animation: blink 2s infinite;}
+    @keyframes blink{0%{color:#1a73e8;}50%{color:#e91e63;}100%{color:#1a73e8;}}
   </style>
 </head>
 <body>
 
-  <!-- Block overlay -->
   <div id="lottieBlock" style="display:none;">
     <div id="lottie"></div>
     <div>419 Cheating 😂</div>
@@ -88,204 +49,194 @@
   <div class="container">
     <h2>Choose a Bank to Generate Receipt</h2>
     <div class="banks">
-      <div class="bank-card" data-page="palmpayform.html">
-        <i class="fa-solid fa-building-columns"></i>
-        <h3>PalmPay</h3>
-      </div>
-      <div class="bank-card" data-page="opayform.html">
-        <i class="fa-solid fa-building-columns"></i>
-        <h3>Opay</h3>
-      </div>
-      <div class="bank-card" data-page="receiptform.html">
-        <i class="fa-solid fa-building-columns"></i>
-        <h3>Kuda</h3>
-      </div>
-      <div class="bank-card" onclick="window.open('https://t.me/web404space','_blank')">
-        <i class="fa-brands fa-telegram bounce"></i>
-        <h3>Channel</h3>
-      </div>
+      <div class="bank-card" data-page="palmpayform.html"><i class="fa-solid fa-building-columns"></i><h3>PalmPay</h3></div>
+      <div class="bank-card" data-page="opayform.html"><i class="fa-solid fa-building-columns"></i><h3>Opay</h3></div>
+      <div class="bank-card" data-page="receiptform.html"><i class="fa-solid fa-building-columns"></i><h3>Kuda</h3></div>
+      <div class="bank-card" id="telegramCard"><i class="fa-brands fa-telegram bounce"></i><h3>Channel</h3></div>
     </div>
 
-    <div class="pricing">
-      🚀 Token Plans: <br>
-      One Week → ₦3,000 <br>
-      One Month → ₦6,500 <br>
-      Unlimited → ₦12,000
-    </div>
+    <div class="pricing">🚀 Token Plans: <br>One Week → ₦3,000 <br>One Month → ₦6,500 <br>Unlimited → ₦12,000</div>
 
     <div class="actions">
       <button onclick="copyUID()">📋 Copy UID</button>
       <a href="developer.html">💬 Contact Developer</a>
-      <a href="status.html" style="background:green;">🔍 View Status</a>
-      <a id="buyTokenBtn" style="background:orange;">💳 Buy Token</a>
+      <a id="statusLink" href="status.html" style="background:green;">🔍 View Status</a>
+      <a id="buyTokenBtn" style="background:orange;cursor:pointer;">💳 Buy Token</a>
     </div>
   </div>
 
 <script>
-  // Block inspect tools and right-click
-  document.onkeydown = function(e){
-    if(e.keyCode==123 || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) || (e.ctrlKey && e.key.toUpperCase()=='U')) {
-      return false;
+/* -------------------------
+   CONFIG: change this URL to your server validation endpoint in production
+   If testing locally, run the server locally and use http://localhost:3000/validate-token
+   ------------------------- */
+const VALIDATE_ENDPOINT = "http://localhost:3000/validate-token";
+
+/* --- anti-inspect & context menu block (keeps behavior you had) --- */
+document.onkeydown = function(e){
+  if(e.keyCode==123 || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) || (e.ctrlKey && e.key.toUpperCase()=='U')) {
+    return false;
+  }
+};
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+/* --- platform detect + windows block --- */
+function detectPlatform(){ const ua=navigator.userAgent.toLowerCase(); if(/android/i.test(ua)) return "android"; if(/iphone|ipad|ipod/i.test(ua)) return "ios"; if(/win/i.test(ua)) return "windows"; return "other"; }
+function blockWindows(){ document.getElementById("lottieBlock").style.display="flex"; lottie.loadAnimation({container:document.getElementById("lottie"),renderer:"svg",loop:true,autoplay:true,path:"https://assets1.lottiefiles.com/packages/lf20_j1adxtyb.json"}); document.body.style.overflow="hidden"; }
+const platform = detectPlatform(); if (platform==="windows" || platform==="other") blockWindows();
+
+/* --- Telegram popup once every 30 minutes --- */
+function showTelegramPopup(){ Swal.fire({icon:'warning',title:'Join Our Telegram Channel',html:'<p>Stay updated and purchase your token easily.</p><a href="https://t.me/web404space" target="_blank" style="color:#1a73e8;font-weight:bold;">👉 Click Here to Join</a>',confirmButtonText:'OK'}); }
+window.onload = function(){
+  const lastShown = localStorage.getItem('lastTelegramPopup');
+  const now = Date.now();
+  if (!lastShown || now - lastShown > 30*60*1000) { showTelegramPopup(); localStorage.setItem('lastTelegramPopup', now); }
+};
+
+/* --- Buy token opens WhatsApp --- */
+document.getElementById('buyTokenBtn').onclick = function(){
+  const phone = "2349020388011";
+  const message = encodeURIComponent("Hello, I want to buy a token for Paste Aza Pro. My UID: " + getOrCreateUID());
+  window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+};
+
+/* --- UID functions --- */
+function getOrCreateUID(){
+  let uid = localStorage.getItem('userUID');
+  if(!uid){ uid = 'UID-' + Math.random().toString(36).substring(2,11) + '-' + Date.now(); localStorage.setItem('userUID', uid); }
+  return uid;
+}
+function copyUID(){ const uid = getOrCreateUID(); navigator.clipboard.writeText(uid).then(()=> { Swal.fire({icon:'success', title:'Copied UID', text: uid, timer:1600, showConfirmButton:false}); }); }
+
+/* --- Bank click handling: only allow when server-validated + not expired + after 5-minute wait --- */
+document.querySelectorAll('.bank-card[data-page]').forEach(card=>{
+  card.addEventListener('click', async e=>{
+    const page = card.dataset.page;
+    const check = checkStoredLicense();
+    if(check.valid){
+      // license valid and fully active
+      window.location.href = page;
+      return;
     }
-  };
-  document.addEventListener('contextmenu', e => e.preventDefault());
+    // if waiting or invalid -> open activation flow
+    await showActivationPopup(page);
+  });
+});
 
-  // Detect platform
-  function detectPlatform() {
-    const ua = navigator.userAgent.toLowerCase();
-    if (/android/i.test(ua)) return "android";
-    if (/iphone|ipad|ipod/i.test(ua)) return "ios";
-    if (/win/i.test(ua)) return "windows";
-    return "other";
+/* --- checkStoredLicense reads what we stored and enforces the 5-minute wait & expiry --- 
+   Local storage keys:
+     licenseToken - the token string
+     licenseStart - server-provided activationStart timestamp (ms)
+     licensePlan  - plan string ("week","month","unlimited")
+*/
+function checkStoredLicense(){
+  const token = localStorage.getItem('licenseToken');
+  const start = localStorage.getItem('licenseStart');
+  const plan = localStorage.getItem('licensePlan');
+  if(!token || !start || !plan) return { valid:false };
+
+  const startDate = new Date(parseInt(start,10));
+  const now = new Date();
+
+  // 5 minute wait period before token becomes active
+  const activationTime = new Date(startDate.getTime() + (5 * 60 * 1000));
+  if(now < activationTime){
+    return { valid:false, waiting:true, remaining: activationTime - now };
   }
 
-  function blockWindows() {
-    document.getElementById("lottieBlock").style.display = "flex";
-    lottie.loadAnimation({
-      container: document.getElementById("lottie"),
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-      path: "https://assets1.lottiefiles.com/packages/lf20_j1adxtyb.json"
-    });
-    document.body.style.overflow="hidden";
-  }
+  // expiry based on plan
+  let days;
+  if(plan === "week") days = 7;
+  else if(plan === "month") days = 30;
+  else if(plan === "unlimited") days = 365;
+  else return { valid:false };
 
-  const platform = detectPlatform();
-  if (platform==="windows" || platform==="other") {
-    blockWindows();
-  }
+  const expiry = new Date(startDate.getTime() + days * 24 * 60 * 60 * 1000);
+  if(now > expiry) return { valid:false, expired:true };
 
-  // Telegram popup once every 30 minutes
-  function showTelegramPopup() {
-    Swal.fire({
-      icon: 'warning',
-      title: 'Join Our Telegram Channel',
-      html: '<p>Stay updated and purchase your token easily.</p><a href="https://t.me/web404space" target="_blank" style="color:#1a73e8;font-weight:bold;">👉 Click Here to Join</a>',
-      confirmButtonText: 'OK'
-    });
-  }
+  return { valid:true };
+}
 
-  window.onload = function() {
-    const lastShown = localStorage.getItem('lastTelegramPopup');
-    const now = Date.now();
-    if (!lastShown || now - lastShown > 30*60*1000) { // 30 mins
-      showTelegramPopup();
-      localStorage.setItem('lastTelegramPopup', now);
+/* --- Activation popup: calls server to validate token BEFORE saving --- */
+async function showActivationPopup(redirectPage){
+  const uid = getOrCreateUID();
+
+  const { value: formData } = await Swal.fire({
+    title: 'Enter License Token',
+    html: `
+      <input id="swToken" class="swal2-input" placeholder="Paste token here">
+      <select id="swPlan" class="swal2-select" style="margin-top:10px;width:80%;">
+        <option value="week">One Week</option>
+        <option value="month">One Month</option>
+        <option value="unlimited">Unlimited</option>
+      </select>
+      <div style="margin-top:10px"><b>Your UID:</b><br>${uid}</div>
+    `,
+    confirmButtonText: 'Activate',
+    showCancelButton: true,
+    preConfirm: () => {
+      const token = document.getElementById('swToken').value && document.getElementById('swToken').value.trim();
+      const plan = document.getElementById('swPlan').value;
+      if(!token) { Swal.showValidationMessage('Please enter a token.'); return false; }
+      return { token, plan };
     }
-  };
-
-  // Buy Token button → WhatsApp
-  document.getElementById('buyTokenBtn').onclick = function() {
-    const phone = "2349020388011";
-    const message = encodeURIComponent("Hello, I want to buy a token for Paste Aza Pro.");
-    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
-  };
-
-  // UID
-  function getOrCreateUID() {
-    let uid = localStorage.getItem('userUID');
-    if (!uid) {
-      uid = 'UID-' + Math.random().toString(36).substring(2,11) + '-' + Date.now();
-      localStorage.setItem('userUID', uid);
-    }
-    return uid;
-  }
-
-  function copyUID() {
-    const uid = getOrCreateUID();
-    navigator.clipboard.writeText(uid).then(() => {
-      Swal.fire({icon:'success', title:'Copied UID', text: uid, timer:1600, showConfirmButton:false});
-    });
-  }
-
-  // Bank Click Handling
-  document.querySelectorAll('.bank-card[data-page]').forEach(card=>{
-    card.addEventListener('click', e=>{
-      const page = card.dataset.page;
-      const check = checkStoredLicense();
-      if (check.valid) {
-        window.location.href = page;
-      } else {
-        showActivationPopup(page);
-      }
-    });
   });
 
-  // Token Validation with Expiry
-  function checkStoredLicense() {
-    const token = localStorage.getItem('licenseToken');
-    const start = localStorage.getItem('licenseStart');
-    const plan = localStorage.getItem('licensePlan');
-    if (!token || !start || !plan) return {valid:false};
+  if(!formData) return; // cancelled
 
-    const startDate = new Date(start);
-    const now = new Date();
-
-    let days;
-    if (plan === "week") days = 7;
-    else if (plan === "month") days = 30;
-    else if (plan === "unlimited") days = 365;
-    else return {valid:false};
-
-    const expiry = new Date(startDate.getTime() + days*24*60*60*1000);
-    if (now > expiry) return {valid:false};
-
-    return {valid:true};
-  }
-
-  function showActivationPopup(page){
-    const uid = getOrCreateUID();
-    Swal.fire({
-      title:'Enter License Token',
-      html:`
-        <input id="swToken" class="swal2-input" placeholder="Paste token here">
-        <select id="swPlan" class="swal2-select" style="margin-top:10px;width:80%;">
-          <option value="week">One Week</option>
-          <option value="month">One Month</option>
-          <option value="unlimited">Unlimited</option>
-        </select>
-        <div style="margin-top:10px"><b>Your UID:</b><br>${uid}</div>
-      `,
-      confirmButtonText:'Activate',
-      showCancelButton:true,
-      preConfirm:()=>{
-        return {
-          token: document.getElementById('swToken').value.trim(),
-          plan: document.getElementById('swPlan').value
-        }
-      }
-    }).then(res=>{
-      if(res.isConfirmed){
-        localStorage.setItem('licenseToken', res.value.token);
-        localStorage.setItem('licenseStart', new Date().toISOString());
-        localStorage.setItem('licensePlan', res.value.plan);
-        Swal.fire('Activated','Redirecting...','success').then(()=>window.location.href=page);
-      }
+  // CALL VALIDATION ENDPOINT (server-side)
+  try {
+    const res = await fetch(VALIDATE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: formData.token, uid, requestedPlan: formData.plan })
     });
-  }
+    const data = await res.json();
 
-  // Theme toggle
-  const themeBtn=document.getElementById('themeToggle');
-  function setTheme(){ 
-    if(localStorage.getItem('theme')==='dark'){
-      document.body.classList.add('dark');
-      themeBtn.innerHTML='<i class="fa-solid fa-sun"></i>';
-    }else{
-      document.body.classList.remove('dark');
-      themeBtn.innerHTML='<i class="fa-solid fa-moon"></i>';
+    if(!res.ok || !data.valid){
+      Swal.fire('Invalid token','The token you entered is invalid. Please purchase a valid one.','error');
+      return;
     }
+
+    // server confirmed token is valid, server provides activationStart (ms) and plan
+    // store server-provided data (prevents client-side time tampering)
+    localStorage.setItem('licenseToken', formData.token);
+    localStorage.setItem('licenseStart', String(data.activationStart)); // ms since epoch
+    localStorage.setItem('licensePlan', data.plan);
+
+    Swal.fire('Token accepted','Token saved. It will be active in 5 minutes.','success')
+      .then(()=> {
+        // optional: redirect after saving; user still must wait 5 minutes before page lets them in
+        // window.location.href = redirectPage;
+      });
+
+  } catch(err){
+    console.error(err);
+    Swal.fire('Error','Could not validate token. Please try again later.','error');
   }
-  setTheme();
-  themeBtn.onclick=()=>{
-    document.body.classList.toggle('dark');
-    localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');
-    setTheme();
-  };
+}
 
-  document.getElementById('statusBtn').onclick=()=>location.href='status.html';
+/* --- Status button: show active / waiting / expired info (same UX as before, but accurate) --- */
+document.getElementById('statusBtn').onclick = function(){
+  const check = checkStoredLicense();
+  if(check.valid){
+    Swal.fire('✅ Active','Your token is valid and active.','success');
+  } else if(check.waiting){
+    const mins = Math.floor(check.remaining / 60000);
+    const secs = Math.floor((check.remaining % 60000) / 1000);
+    Swal.fire('⏳ Waiting','Token will activate in ' + mins + 'm ' + secs + 's.','info');
+  } else {
+    Swal.fire('❌ Inactive','No valid token found or token expired.','error');
+  }
+};
 
-  getOrCreateUID();
+/* --- theme code --- */
+const themeBtn = document.getElementById('themeToggle');
+function setTheme(){ if(localStorage.getItem('theme')==='dark'){ document.body.classList.add('dark'); themeBtn.innerHTML='<i class="fa-solid fa-sun"></i>'; } else { document.body.classList.remove('dark'); themeBtn.innerHTML='<i class="fa-solid fa-moon"></i>'; } }
+setTheme();
+themeBtn.onclick = ()=>{ document.body.classList.toggle('dark'); localStorage.setItem('theme', document.body.classList.contains('dark')?'dark':'light'); setTheme(); };
+
+getOrCreateUID();
 </script>
 </body>
 </html>
