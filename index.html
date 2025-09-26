@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -6,6 +6,7 @@
   <title>Paste Aza Pro</title>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root { --bg-light:#f5f5f5; --bg-dark:#121212; --text-light:#333; --text-dark:#fff; --card-light:#fff; --card-dark:#1e1e1e; --primary:#1a73e8; }
@@ -66,13 +67,12 @@
   </div>
 
 <script>
-/* -------------------------
-   CONFIG: change this URL to your server validation endpoint in production
-   If testing locally, run the server locally and use http://localhost:3000/validate-token
-   ------------------------- */
-const VALIDATE_ENDPOINT = "http://localhost:3000/validate-token";
+/* --- Supabase init --- */
+const SUPABASE_URL = "https://zwmditpxtvqwugsdmulr.supabase.co";
+const SUPABASE_ANON_KEY = "PASTE-YOUR-ANON-PUBLIC-KEY-HERE"; 
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* --- anti-inspect & context menu block (keeps behavior you had) --- */
+/* --- anti-inspect --- */
 document.onkeydown = function(e){
   if(e.keyCode==123 || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) || (e.ctrlKey && e.key.toUpperCase()=='U')) {
     return false;
@@ -80,12 +80,12 @@ document.onkeydown = function(e){
 };
 document.addEventListener('contextmenu', e => e.preventDefault());
 
-/* --- platform detect + windows block --- */
+/* --- platform detect --- */
 function detectPlatform(){ const ua=navigator.userAgent.toLowerCase(); if(/android/i.test(ua)) return "android"; if(/iphone|ipad|ipod/i.test(ua)) return "ios"; if(/win/i.test(ua)) return "windows"; return "other"; }
 function blockWindows(){ document.getElementById("lottieBlock").style.display="flex"; lottie.loadAnimation({container:document.getElementById("lottie"),renderer:"svg",loop:true,autoplay:true,path:"https://assets1.lottiefiles.com/packages/lf20_j1adxtyb.json"}); document.body.style.overflow="hidden"; }
 const platform = detectPlatform(); if (platform==="windows" || platform==="other") blockWindows();
 
-/* --- Telegram popup once every 30 minutes --- */
+/* --- Telegram popup every 30 mins --- */
 function showTelegramPopup(){ Swal.fire({icon:'warning',title:'Join Our Telegram Channel',html:'<p>Stay updated and purchase your token easily.</p><a href="https://t.me/web404space" target="_blank" style="color:#1a73e8;font-weight:bold;">👉 Click Here to Join</a>',confirmButtonText:'OK'}); }
 window.onload = function(){
   const lastShown = localStorage.getItem('lastTelegramPopup');
@@ -93,14 +93,14 @@ window.onload = function(){
   if (!lastShown || now - lastShown > 30*60*1000) { showTelegramPopup(); localStorage.setItem('lastTelegramPopup', now); }
 };
 
-/* --- Buy token opens WhatsApp --- */
+/* --- Buy token via WhatsApp --- */
 document.getElementById('buyTokenBtn').onclick = function(){
   const phone = "2349020388011";
   const message = encodeURIComponent("Hello, I want to buy a token for Paste Aza Pro. My UID: " + getOrCreateUID());
   window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
 };
 
-/* --- UID functions --- */
+/* --- UID --- */
 function getOrCreateUID(){
   let uid = localStorage.getItem('userUID');
   if(!uid){ uid = 'UID-' + Math.random().toString(36).substring(2,11) + '-' + Date.now(); localStorage.setItem('userUID', uid); }
@@ -108,27 +108,20 @@ function getOrCreateUID(){
 }
 function copyUID(){ const uid = getOrCreateUID(); navigator.clipboard.writeText(uid).then(()=> { Swal.fire({icon:'success', title:'Copied UID', text: uid, timer:1600, showConfirmButton:false}); }); }
 
-/* --- Bank click handling: only allow when server-validated + not expired + after 5-minute wait --- */
+/* --- Bank card click --- */
 document.querySelectorAll('.bank-card[data-page]').forEach(card=>{
   card.addEventListener('click', async e=>{
     const page = card.dataset.page;
     const check = checkStoredLicense();
     if(check.valid){
-      // license valid and fully active
       window.location.href = page;
       return;
     }
-    // if waiting or invalid -> open activation flow
     await showActivationPopup(page);
   });
 });
 
-/* --- checkStoredLicense reads what we stored and enforces the 5-minute wait & expiry --- 
-   Local storage keys:
-     licenseToken - the token string
-     licenseStart - server-provided activationStart timestamp (ms)
-     licensePlan  - plan string ("week","month","unlimited")
-*/
+/* --- checkStoredLicense --- */
 function checkStoredLicense(){
   const token = localStorage.getItem('licenseToken');
   const start = localStorage.getItem('licenseStart');
@@ -138,13 +131,11 @@ function checkStoredLicense(){
   const startDate = new Date(parseInt(start,10));
   const now = new Date();
 
-  // 5 minute wait period before token becomes active
   const activationTime = new Date(startDate.getTime() + (5 * 60 * 1000));
   if(now < activationTime){
     return { valid:false, waiting:true, remaining: activationTime - now };
   }
 
-  // expiry based on plan
   let days;
   if(plan === "week") days = 7;
   else if(plan === "month") days = 30;
@@ -157,7 +148,39 @@ function checkStoredLicense(){
   return { valid:true };
 }
 
-/* --- Activation popup: calls server to validate token BEFORE saving --- */
+/* --- Supabase validation --- */
+async function validateTokenWithSupabase(token, uid, plan) {
+  const { data, error } = await supabase
+    .from('tokens')
+    .select('*')
+    .eq('token', token)
+    .eq('plan', plan)
+    .eq('valid', true)
+    .maybeSingle();
+
+  if (error) {
+    console.error(error);
+    return { valid: false };
+  }
+
+  if (!data) {
+    return { valid: false };
+  }
+
+  if (data.used_by && data.used_by !== uid) {
+    return { valid: false };
+  }
+
+  const activationStart = Date.now();
+  await supabase
+    .from('tokens')
+    .update({ used_by: uid, activation_start: activationStart })
+    .eq('token', token);
+
+  return { valid: true, activationStart, plan: data.plan };
+}
+
+/* --- Activation popup --- */
 async function showActivationPopup(redirectPage){
   const uid = getOrCreateUID();
 
@@ -182,41 +205,28 @@ async function showActivationPopup(redirectPage){
     }
   });
 
-  if(!formData) return; // cancelled
+  if(!formData) return;
 
-  // CALL VALIDATION ENDPOINT (server-side)
   try {
-    const res = await fetch(VALIDATE_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: formData.token, uid, requestedPlan: formData.plan })
-    });
-    const data = await res.json();
+    const result = await validateTokenWithSupabase(formData.token, uid, formData.plan);
 
-    if(!res.ok || !data.valid){
+    if (!result.valid) {
       Swal.fire('Invalid token','The token you entered is invalid. Please purchase a valid one.','error');
       return;
     }
 
-    // server confirmed token is valid, server provides activationStart (ms) and plan
-    // store server-provided data (prevents client-side time tampering)
     localStorage.setItem('licenseToken', formData.token);
-    localStorage.setItem('licenseStart', String(data.activationStart)); // ms since epoch
-    localStorage.setItem('licensePlan', data.plan);
+    localStorage.setItem('licenseStart', String(result.activationStart));
+    localStorage.setItem('licensePlan', result.plan);
 
-    Swal.fire('Token accepted','Token saved. It will be active in 5 minutes.','success')
-      .then(()=> {
-        // optional: redirect after saving; user still must wait 5 minutes before page lets them in
-        // window.location.href = redirectPage;
-      });
-
+    Swal.fire('Token accepted','Token saved. It will be active in 5 minutes.','success');
   } catch(err){
     console.error(err);
     Swal.fire('Error','Could not validate token. Please try again later.','error');
   }
 }
 
-/* --- Status button: show active / waiting / expired info (same UX as before, but accurate) --- */
+/* --- Status button --- */
 document.getElementById('statusBtn').onclick = function(){
   const check = checkStoredLicense();
   if(check.valid){
@@ -230,7 +240,7 @@ document.getElementById('statusBtn').onclick = function(){
   }
 };
 
-/* --- theme code --- */
+/* --- theme toggle --- */
 const themeBtn = document.getElementById('themeToggle');
 function setTheme(){ if(localStorage.getItem('theme')==='dark'){ document.body.classList.add('dark'); themeBtn.innerHTML='<i class="fa-solid fa-sun"></i>'; } else { document.body.classList.remove('dark'); themeBtn.innerHTML='<i class="fa-solid fa-moon"></i>'; } }
 setTheme();
