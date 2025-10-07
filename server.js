@@ -173,7 +173,7 @@ app.post("/api/login", async (req, res) => {
       message: "Login successful", 
       user: { firstName: data.fullName, role: data.role },
       hasValidToken: hasValidToken,
-      redirect: hasValidToken ? null : '/activate.html'
+      redirect: hasValidToken ? '/index.html' : '/activate.html'
     });
   } catch (err) {
     console.error("❌ Error during login:", err);
