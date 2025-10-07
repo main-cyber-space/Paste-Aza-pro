@@ -100,48 +100,99 @@
 
     setInterval(showNext, 6000);
 
+    // Replace the fetch call in your login form with direct Supabase authentication
+    
+    // Add this script tag in the head section
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    // Then replace your login fetch code with:
     // Login logic with SweetAlert2
     document.getElementById("login-form").addEventListener("submit", function(e){
       e.preventDefault();
-
+    
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
-
-      // Send login request to server
-      fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
+    
+      // Initialize Supabase client
+      const SUPABASE_URL = "https://clykgtzngxomhrbvyooc.supabase.co";
+      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNseWtndHpuZ3hvbWhyYnZ5b29jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0OTQ0NDEsImV4cCI6MjA3NTA3MDQ0MX0.Wd9JKT_LgfQvOVVUK9c3LbJDDHQBgid_tNvHZOIAQ-g"; // Use anon key for client-side
+      const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+      // Show loading
+      Swal.fire({
+        title: 'Logging in...',
+        text: 'Please wait',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+    
+      // Check user credentials directly from Supabase
+      supabase
+        .from("users")
+        .select("*")
+        .eq("email", email)
+        .eq("password", password)
+        .single()
+        .then(({ data, error }) => {
+          if (error || !data) {
+            Swal.fire("❌ Invalid Login", "Email or password is incorrect. Please try again.", "error");
+            return;
+          }
+    
+          // Store user info in localStorage
+          localStorage.setItem('user', JSON.stringify({
+            id: data.id,
+            firstName: data.fullName,
+            email: data.email,
+            role: data.role,
+            isLoggedIn: true
+          }));
+    
+          // Check if user has a valid token
+          return supabase
+            .from("tokens")
+            .select("*")
+            .eq("user_id", data.id)
+            .eq("valid", true)
+            .order('created_at', { ascending: false })
+            .limit(1);
+        })
+        .then(({ data: tokenData, error: tokenError }) => {
+          if (tokenError) {
+            console.error("Token check error:", tokenError);
+          }
+    
+          const hasValidToken = !tokenError && tokenData && tokenData.length > 0 && 
+                              (!tokenData[0].expires_at || new Date(tokenData[0].expires_at) > new Date());
+    
+          // Store token info
+          if (hasValidToken) {
+            localStorage.setItem('token', JSON.stringify(tokenData[0]));
+          }
+    
           Swal.fire({
             title: "🎉 Login Successful!",
-            text: "Welcome back " + (data.user && data.user.firstName ? data.user.firstName : ""),
+            text: "Welcome back " + JSON.parse(localStorage.getItem('user')).firstName,
             icon: "success",
-            confirmButtonText: "Continue to Dashboard",
+            confirmButtonText: "Continue",
             confirmButtonColor: "#40196D"
           }).then((result) => {
             if (result.isConfirmed) {
-              // Check if there's a redirect URL from the server
-              if (data.redirect) {
-                window.location.href = data.redirect;
-              } else {
+              // Redirect based on token status
+              if (hasValidToken) {
                 window.location.href = "index.html";
+              } else {
+                window.location.href = "activate.html";
               }
             }
           });
-        } else {
-          Swal.fire("❌ Invalid Login", data.message || "Email or password is incorrect. Please try again.", "error");
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        Swal.fire("❌ Server Error", "An error occurred during login. Please try again.", "error");
-      });
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          Swal.fire("❌ Server Error", "An error occurred during login. Please try again.", "error");
+        });
     });
   </script>
 </body>

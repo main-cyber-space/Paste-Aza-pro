@@ -127,6 +127,10 @@ document.onkeydown = function(e){
 document.addEventListener('contextmenu', e => e.preventDefault());
 
 /* --- Activate token --- */
+// Add Supabase script
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+// Replace your activation code with:
 document.getElementById('activateBtn').addEventListener('click', function() {
   const token = document.getElementById('tokenInput').value.trim();
   
@@ -145,17 +149,59 @@ document.getElementById('activateBtn').addEventListener('click', function() {
     }
   });
   
-  // Send activation request
-  fetch('/api/activate-token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ token })
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
+  // Initialize Supabase client
+  const SUPABASE_URL = "https://clykgtzngxomhrbvyooc.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNseWtndHpuZ3hvbWhyYnZ5b29jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0OTQ0NDEsImV4cCI6MjA3NTA3MDQ0MX0.Wd9JKT_LgfQvOVVUK9c3LbJDDHQBgid_tNvHZOIAQ-g"; // Use anon key for client-side
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  
+  // Get user from localStorage
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (!user || !user.id) {
+    Swal.fire('Error', 'You need to be logged in to activate a token', 'error');
+    setTimeout(() => {
+      window.location.href = 'login.html';
+    }, 2000);
+    return;
+  }
+  
+  // Check if token exists and is valid
+  supabase
+    .from("tokens")
+    .select("*")
+    .or(`"1 week token".eq.${token},"1 month token".eq.${token},"lifetime token".eq.${token}`)
+    .eq("valid", true)
+    .is("user_id", null) // Token should not be assigned to any user yet
+    .single()
+    .then(({ data, error }) => {
+      if (error || !data) {
+        Swal.fire('Error', 'Invalid or already used token', 'error');
+        return Promise.reject("Invalid token");
+      }
+      
+      // Determine which type of token was used
+      let plan = 'lifetime';
+      if (data["1 week token"] === token) {
+        plan = 'week';
+      } else if (data["1 month token"] === token) {
+        plan = 'month';
+      }
+      
+      // Assign token to user
+      return supabase
+        .from("tokens")
+        .update({ 
+          user_id: user.id,
+          email: data.email || user.email
+        })
+        .eq("id", data.id);
+    })
+    .then(({ error: updateError }) => {
+      if (updateError) {
+        console.error("Token activation error:", updateError);
+        Swal.fire('Error', 'Token activation failed', 'error');
+        return;
+      }
+      
       Swal.fire({
         title: 'Success!',
         text: 'Your account has been activated successfully',
@@ -164,15 +210,19 @@ document.getElementById('activateBtn').addEventListener('click', function() {
       }).then(() => {
         window.location.href = 'index.html';
       });
-    } else {
-      Swal.fire('Error', data.message || 'Activation failed', 'error');
-    }
-  })
-  .catch(error => {
-    console.error('Activation error:', error);
-    Swal.fire('Error', 'An error occurred during activation', 'error');
-  });
+    })
+    .catch(error => {
+      if (error === "Invalid token") return;
+      console.error('Activation error:', error);
+      Swal.fire('Error', 'An error occurred during activation', 'error');
+    });
 });
+
+// Authentication check
+const user = JSON.parse(localStorage.getItem('user'));
+if (!user || !user.isLoggedIn) {
+  window.location.href = 'login.html';
+}
 </script>
 </body>
 </html>

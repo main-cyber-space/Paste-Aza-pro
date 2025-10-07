@@ -154,34 +154,79 @@
     setInterval(showNext, 6000);
 
     // Signup logic
+    // Add Supabase script
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    // Replace your signup fetch code with:
     document.getElementById("signup-form").addEventListener("submit", function(e){
       e.preventDefault();
-
+    
       const fullName = document.getElementById("fullName").value.trim();
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
-
-      // Send data to server
-      fetch('/api/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ fullName, email, password })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert("Signup successful! Redirecting to login...");
-          window.location.href = "login.html";
-        } else {
-          alert("Signup failed: " + data.message);
+    
+      // Initialize Supabase client
+      const SUPABASE_URL = "https://clykgtzngxomhrbvyooc.supabase.co";
+      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNseWtndHpuZ3hvbWhyYnZ5b29jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0OTQ0NDEsImV4cCI6MjA3NTA3MDQ0MX0.Wd9JKT_LgfQvOVVUK9c3LbJDDHQBgid_tNvHZOIAQ-g"; // Use anon key for client-side
+      const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+      // Show loading
+      Swal.fire({
+        title: 'Signing up...',
+        text: 'Please wait',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
         }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert("An error occurred during signup. Please try again.");
       });
+    
+      // Check if user already exists
+      supabase
+        .from("users")
+        .select("*")
+        .eq("email", email)
+        .single()
+        .then(({ data: existingUser, error: checkError }) => {
+          if (existingUser) {
+            Swal.fire("❌ Error", "User with this email already exists", "error");
+            return Promise.reject("User exists");
+          }
+    
+          // Create new user
+          return supabase
+            .from("users")
+            .insert([{ 
+              fullName: fullName,
+              email: email,
+              password: password,
+              role: 'user'
+            }])
+            .select();
+        })
+        .then(({ data, error }) => {
+          if (error) {
+            console.error("Signup error:", error);
+            Swal.fire("❌ Error", "Signup failed: " + error.message, "error");
+            return;
+          }
+    
+          Swal.fire({
+            title: "✅ Signup Successful!",
+            text: "Please login to continue",
+            icon: "success",
+            confirmButtonText: "Go to Login",
+            confirmButtonColor: "#40196D"
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = "login.html";
+            }
+          });
+        })
+        .catch(error => {
+          if (error === "User exists") return;
+          console.error('Error:', error);
+          Swal.fire("❌ Server Error", "An error occurred during signup. Please try again.", "error");
+        });
     });
   </script>
 </body>
