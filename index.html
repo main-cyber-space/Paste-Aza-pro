@@ -5,89 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Paste Aza Pro</title>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  // Add Supabase script
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
-  // Replace your authentication check with:
-  // Authentication check
-  const user = JSON.parse(localStorage.getItem('user'));
-  if (!user || !user.isLoggedIn) {
-    window.location.href = 'login.html';
-  }
-  
-  // Initialize Supabase client
-  const SUPABASE_URL = "https://clykgtzngxomhrbvyooc.supabase.co";
-  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNseWtndHpuZ3hvbWhyYnZ5b29jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0OTQ0NDEsImV4cCI6MjA3NTA3MDQ0MX0.Wd9JKT_LgfQvOVVUK9c3LbJDDHQBgid_tNvHZOIAQ-g"; // Use anon key for client-side
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  
-  // Check token status
-  supabase
-    .from("tokens")
-    .select("*")
-    .eq("user_id", user.id)
-    .eq("valid", true)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .then(({ data, error }) => {
-      const banner = document.getElementById('subscriptionBanner');
-      
-      if (!error && data && data.length > 0 && 
-          (!data[0].expires_at || new Date(data[0].expires_at) > new Date())) {
-        // User has a valid token
-        const planName = data[0].plan === 'week' ? '1 Week' : 
-                       data[0].plan === 'month' ? '1 Month' : 
-                       data[0].plan === 'lifetime' ? 'Lifetime' : data[0].plan;
-        
-        if (data[0].expires_at) {
-          const expiryDate = new Date(data[0].expires_at);
-          const now = new Date();
-          const daysLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
-          
-          banner.style.background = '#4caf50';
-          banner.innerHTML = `Active Subscription: ${planName} Plan - ${daysLeft} days remaining`;
-        } else {
-          banner.style.background = '#4caf50';
-          banner.innerHTML = `Active Subscription: ${planName} Plan - Never Expires`;
-        }
-        
-        // Enable bank cards
-        document.querySelectorAll('.bank-card').forEach(card => {
-          card.style.opacity = '1';
-          card.style.cursor = 'pointer';
-        });
-      } else {
-        // No valid token
-        banner.style.background = '#f44336';
-        banner.innerHTML = 'Your account is not activated. Please purchase a token to access all features.';
-        
-        // Disable bank cards
-        document.querySelectorAll('.bank-card').forEach(card => {
-          card.style.opacity = '0.5';
-          card.style.cursor = 'not-allowed';
-          
-          card.addEventListener('click', e => {
-            e.preventDefault();
-            Swal.fire({
-              title: 'Activation Required',
-              text: 'You need to activate your account with a token to access this feature',
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonText: 'Activate Now',
-              cancelButtonText: 'Later',
-              confirmButtonColor: '#6a1b9a'
-            }).then((result) => {
-              if (result.isConfirmed) {
-                window.location.href = 'activate.html';
-              }
-            });
-          });
-        });
-      }
-    })
-    .catch(error => {
-      console.error('Error checking token status:', error);
-      document.getElementById('subscriptionBanner').innerHTML = 'Could not verify subscription status';
-    });
+  <!-- Add Supabase script -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root { --bg-light:#f5f5f5; --bg-dark:#121212; --text-light:#333; --text-dark:#fff; --card-light:#fff; --card-dark:#1e1e1e; --primary:#6a1b9a; }
@@ -150,147 +69,108 @@
     </div>
   </div>
 
-<script>
-/* --- Authentication check --- */
-fetch('/api/check-auth')
-  .then(response => response.json())
-  .then(data => {
-    if (!data.isLoggedIn) {
-      window.location.href = 'login.html';
-    }
-  })
-  .catch(error => console.error('Auth check error:', error));
-
-/* --- Check token status --- */
-fetch('/api/user/token')
-  .then(response => response.json())
-  .then(data => {
-    const banner = document.getElementById('subscriptionBanner');
-    
-    if (data.success && data.hasToken) {
-      // User has a valid token
-      const planName = data.plan === 'week' ? '1 Week' : 
-                       data.plan === 'month' ? '1 Month' : 
-                       data.plan === 'lifetime' ? 'Lifetime' : data.plan;
-      
-      if (data.expiresAt) {
-        const expiryDate = new Date(data.expiresAt);
-        const now = new Date();
-        const daysLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
-        
-        banner.style.background = '#4caf50';
-        banner.innerHTML = `Active Subscription: ${planName} Plan - ${daysLeft} days remaining`;
-      } else {
-        banner.style.background = '#4caf50';
-        banner.innerHTML = `Active Subscription: ${planName} Plan - Never Expires`;
+  <script>
+    // Authentication check
+    document.addEventListener('DOMContentLoaded', function() {
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (!user || !user.isLoggedIn) {
+        window.location.href = 'login.html';
       }
-    } else {
-      // No valid token
-      banner.style.background = '#f44336';
-      banner.innerHTML = 'Your account is not activated. Please purchase a token to access all features.';
       
-      // Disable bank cards
-      document.querySelectorAll('.bank-card').forEach(card => {
-        card.style.opacity = '0.5';
-        card.style.cursor = 'not-allowed';
-        card.removeAttribute('data-page');
-        
-        card.addEventListener('click', e => {
-          e.preventDefault();
-          Swal.fire({
-            title: 'Activation Required',
-            text: 'You need to activate your account with a token to access this feature',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Activate Now',
-            cancelButtonText: 'Later',
-            confirmButtonColor: '#6a1b9a'
-          }).then((result) => {
-            if (result.isConfirmed) {
-              window.location.href = 'activate.html';
+      // Initialize Supabase client
+      const SUPABASE_URL = "https://clykgtzngxomhrbvyooc.supabase.co";
+      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNseWtndHpuZ3hvbWhyYnZ5b29jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0OTQ0NDEsImV4cCI6MjA3NTA3MDQ0MX0.Wd9JKT_LgfQvOVVUK9c3LbJDDHQBgid_tNvHZOIAQ-g"; 
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      
+      // Check token status
+      supabase
+        .from("tokens")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("valid", true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .then(({ data, error }) => {
+          const banner = document.getElementById('subscriptionBanner');
+          
+          if (!error && data && data.length > 0 && 
+              (!data[0].expires_at || new Date(data[0].expires_at) > new Date())) {
+            // User has a valid token
+            const planName = data[0].plan === 'week' ? '1 Week' : 
+                           data[0].plan === 'month' ? '1 Month' : 
+                           data[0].plan === 'lifetime' ? 'Lifetime' : data[0].plan;
+            
+            if (data[0].expires_at) {
+              const expiryDate = new Date(data[0].expires_at);
+              const now = new Date();
+              const daysLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
+              
+              banner.style.background = '#4caf50';
+              banner.innerHTML = `Active Subscription: ${planName} Plan - ${daysLeft} days remaining`;
+            } else {
+              banner.style.background = '#4caf50';
+              banner.innerHTML = `Active Subscription: ${planName} Plan - Never Expires`;
             }
-          });
+            
+            // Enable bank cards
+            document.querySelectorAll('.bank-card').forEach(card => {
+              card.style.opacity = '1';
+              card.style.cursor = 'pointer';
+              
+              card.addEventListener('click', function() {
+                const page = this.getAttribute('data-page');
+                if (page) {
+                  window.location.href = page;
+                }
+              });
+            });
+          } else {
+            // No valid token
+            banner.style.background = '#f44336';
+            banner.innerHTML = 'Your account is not activated. Please purchase a token to access all features.';
+            
+            // Disable bank cards
+            document.querySelectorAll('.bank-card').forEach(card => {
+              card.style.opacity = '0.5';
+              card.style.cursor = 'not-allowed';
+              
+              card.addEventListener('click', e => {
+                e.preventDefault();
+                Swal.fire({
+                  title: 'Activation Required',
+                  text: 'You need to activate your account with a token to access this feature',
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonText: 'Activate Now',
+                  cancelButtonText: 'Later',
+                  confirmButtonColor: '#6a1b9a'
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    window.location.href = 'activate.html';
+                  }
+                });
+              });
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error checking token status:', error);
+          document.getElementById('subscriptionBanner').innerHTML = 'Could not verify subscription status';
         });
+        
+      // Button event listeners
+      document.getElementById('buyTokenBtn').addEventListener('click', function() {
+        window.location.href = 'activate.html';
       });
-    }
-  })
-  .catch(error => {
-    console.error('Error checking token status:', error);
-    document.getElementById('subscriptionBanner').innerHTML = 'Could not verify subscription status';
-  });
-
-/* --- disable inspect --- */
-document.onkeydown = function(e){
-  if(e.keyCode==123 || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) || (e.ctrlKey && e.key.toUpperCase()=='U')) {
-    return false;
-  }
-};
-document.addEventListener('contextmenu', e => e.preventDefault());
-
-/* --- Buy token --- */
-document.getElementById('buyTokenBtn').onclick = function(){
-  Swal.fire('Buy Token','Redirecting to WhatsApp seller...','info');
-  window.open("https://wa.me/2349020388011?text=Hello, I want to buy a token for Paste Aza Pro","_blank");
-};
-
-/* --- Developer --- */
-document.getElementById('developerBtn').onclick = function(){
-  window.location.href = "developer.html";
-};
-
-/* --- Profile --- */
-document.getElementById('profileBtn').onclick = function(){
-  window.location.href = "profile.html";
-};
-
-/* --- Bank card click --- */
-document.querySelectorAll('.bank-card[data-page]').forEach(card=>{
-  card.addEventListener('click', e=>{
-    const page = card.dataset.page;
-    if (page) {
-      window.location.href = page;
-    }
-  });
-});
-
-/* --- Additional anti-inspect protection --- */
-(function() {
-  function blockDevTools() {
-    if(window.devtools.isOpen) {
-      window.location.href = 'blocked.html';
-    }
-  }
-  
-  // Create devtools detector
-  const devtools = {
-    isOpen: false,
-    orientation: undefined
-  };
-  
-  // Add detector
-  const threshold = 160;
-  const emitEvent = (isOpen, orientation) => {
-    window.devtools = { isOpen, orientation };
-  };
-  
-  // Check width/height differential
-  setInterval(() => {
-    const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-    const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-    const orientation = widthThreshold ? 'vertical' : 'horizontal';
-    
-    if(widthThreshold || heightThreshold) {
-      if(!devtools.isOpen || devtools.orientation !== orientation) {
-        emitEvent(true, orientation);
-        blockDevTools();
-      }
-    } else {
-      if(devtools.isOpen) {
-        emitEvent(false, null);
-      }
-    }
-  }, 500);
-})();
-</script>
+      
+      document.getElementById('developerBtn').addEventListener('click', function() {
+        window.location.href = 'developer.html';
+      });
+      
+      document.getElementById('profileBtn').addEventListener('click', function() {
+        window.location.href = 'profile.html';
+      });
+    });
+  </script>
 </body>
 </html>

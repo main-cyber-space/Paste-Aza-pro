@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <!-- Add Supabase script -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -153,7 +153,7 @@
       // Initialize Supabase client
       const SUPABASE_URL = "https://clykgtzngxomhrbvyooc.supabase.co";
       const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNseWtndHpuZ3hvbWhyYnZ5b29jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0OTQ0NDEsImV4cCI6MjA3NTA3MDQ0MX0.Wd9JKT_LgfQvOVVUK9c3LbJDDHQBgid_tNvHZOIAQ-g";
-      const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
       // Show loading
       Swal.fire({
