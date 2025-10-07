@@ -3,139 +3,119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kuda Clone - Sign Up</title>
-  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <title>Sign Up - Paste Aza Pro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Add Supabase script -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body {
-      margin:0;
-      font-family:'Segoe UI',Tahoma,sans-serif;
-      background:#fff;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      min-height:100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
-    .container {
-      width:100%;
-      max-width:400px;
-      padding:20px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
+    .signup-container {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
     }
     .anim-wrapper {
       position: relative;
-      width: 220px;
-      height: 220px;
-      margin-bottom: 15px;
+      height: 200px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     lottie-player {
       position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       opacity: 0;
-      transition: opacity 1s ease-in-out;
+      transition: opacity 0.5s ease;
     }
     lottie-player.active {
       opacity: 1;
     }
-    h2 {
-      font-size:20px;
-      margin-bottom:20px;
-      text-align:center;
-      color:#333;
+    h1 {
+      text-align: center;
+      color: #40196D;
+      margin-bottom: 20px;
     }
-    form {
-      width:100%;
-      display:flex;
-      flex-direction:column;
-      gap:15px;
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+      font-size: 14px;
     }
     input {
-      padding:14px;
-      border:1px solid #ccc;
-      border-radius:10px;
-      font-size:15px;
-      width:100%;
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      box-sizing: border-box;
     }
-    .btn {
-      background-color:#40196D;
-      color:#fff;
-      border:none;
-      padding:14px;
-      border-radius:10px;
-      font-size:16px;
-      font-weight:bold;
-      cursor:pointer;
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #40196D;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
     }
-    .btn:hover {background-color:#2e1250;}
-    .toggle-text {
-      margin-top:20px;
-      text-align:center;
-      font-size:14px;
-      color:#555;
+    button:hover {
+      background-color: #33145a;
     }
-    .toggle-text a {
-      color:#40196D;
-      font-weight:bold;
-      text-decoration:none;
-    }
+    .toggle-text {margin-top:20px;text-align:center;font-size:14px;color:#555;}
+    .toggle-text a {color:#40196D;font-weight:bold;text-decoration:none;}
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Animation wrapper with 3 animations -->
+  <div class="signup-container">
+    <h1>Create an Account</h1>
     <div class="anim-wrapper">
-      <lottie-player class="active" src="https://assets10.lottiefiles.com/packages/lf20_xlmz9xwm.json" background="transparent" speed="1" loop autoplay></lottie-player>
-      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_puciaact.json" background="transparent" speed="1" loop></lottie-player>
-      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_kxsd2ytq.json" background="transparent" speed="1" loop></lottie-player>
+      <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_jcikwtux.json" background="transparent" speed="1" class="active" autoplay></lottie-player>
+      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_q7hiluze.json" background="transparent" speed="1"></lottie-player>
+      <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_ysrn2iwp.json" background="transparent" speed="1"></lottie-player>
     </div>
-
-    <h2>Create your Paste Aza Pro Account</h2>
-
     <form id="signup-form">
-      <input id="fullName" type="text" placeholder="Full Name" required>
-      <input id="email" type="email" placeholder="Email" required>
-      <input id="password" type="password" placeholder="Password" required>
-      <button type="submit" class="btn">Sign Up</button>
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required>
+      </div>
+      <button type="submit">Sign Up</button>
     </form>
-
-    <script>
-    document.getElementById('signup-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const fullName = document.getElementById('fullName').value;
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      
-      try {
-        const response = await fetch('/api/signup', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            firstName: fullName,  // Match the server's expected parameter name
-            email,
-            password
-          })
-        });
-        
-        const data = await response.json();
-        if (data.success) {
-          window.location.href = '/login.html';
-        } else {
-          alert(data.message);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred during signup');
-      }
-    });
-    </script>
     <p class="toggle-text">Already have an account? <a href="login.html">Login</a></p>
   </div>
 
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
   <script>
     // Animation rotation
     const players = document.querySelectorAll(".anim-wrapper lottie-player");
@@ -153,23 +133,19 @@
 
     setInterval(showNext, 6000);
 
-    // Signup logic
-    // Add Supabase script
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    // Replace your signup fetch code with:
+    // Signup logic with Supabase
     document.getElementById("signup-form").addEventListener("submit", function(e){
       e.preventDefault();
-    
+
       const fullName = document.getElementById("fullName").value.trim();
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
-    
+
       // Initialize Supabase client
       const SUPABASE_URL = "https://clykgtzngxomhrbvyooc.supabase.co";
-      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNseWtndHpuZ3hvbWhyYnZ5b29jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0OTQ0NDEsImV4cCI6MjA3NTA3MDQ0MX0.Wd9JKT_LgfQvOVVUK9c3LbJDDHQBgid_tNvHZOIAQ-g"; // Use anon key for client-side
-      const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    
+      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNseWtndHpuZ3hvbWhyYnZ5b29jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0OTQ0NDEsImV4cCI6MjA3NTA3MDQ0MX0.Wd9JKT_LgfQvOVVUK9c3LbJDDHQBgid_tNvHZOIAQ-g";
+      const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
+
       // Show loading
       Swal.fire({
         title: 'Signing up...',
@@ -179,7 +155,7 @@
           Swal.showLoading();
         }
       });
-    
+
       // Check if user already exists
       supabase
         .from("users")
@@ -191,7 +167,7 @@
             Swal.fire("❌ Error", "User with this email already exists", "error");
             return Promise.reject("User exists");
           }
-    
+
           // Create new user
           return supabase
             .from("users")
@@ -209,7 +185,7 @@
             Swal.fire("❌ Error", "Signup failed: " + error.message, "error");
             return;
           }
-    
+
           Swal.fire({
             title: "✅ Signup Successful!",
             text: "Please login to continue",

@@ -3,49 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kuda Clone - Login</title>
-  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-  <!-- SweetAlert2 -->
+  <title>Login - Paste Aza Pro</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Add Supabase script -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body {
-      margin:0;
-      font-family:'Segoe UI',Tahoma,sans-serif;
-      background:#fff;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      min-height:100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
-    .container {
-      width:100%;
-      max-width:400px;
-      padding:20px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
+    .login-container {
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 400px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
     }
     .anim-wrapper {
       position: relative;
-      width: 220px;
-      height: 220px;
-      margin-bottom: 15px;
+      height: 200px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     lottie-player {
       position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       opacity: 0;
-      transition: opacity 1s ease-in-out;
+      transition: opacity 0.5s ease;
     }
     lottie-player.active {
       opacity: 1;
     }
-    h2 {font-size:20px;margin-bottom:20px;text-align:center;color:#333;}
-    form {width:100%;display:flex;flex-direction:column;gap:15px;}
-    input {padding:14px;border:1px solid #ccc;border-radius:10px;font-size:15px;width:100%;}
-    .btn {background-color:#40196D;color:#fff;border:none;padding:14px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;}
-    .btn:hover {background-color:#2e1250;}
+    h1 {
+      text-align: center;
+      color: #40196D;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+      font-size: 14px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #40196D;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #33145a;
+    }
     .toggle-text {margin-top:20px;text-align:center;font-size:14px;color:#555;}
     .toggle-text a {color:#40196D;font-weight:bold;text-decoration:none;}
     .forgot-password {
@@ -62,29 +101,33 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Animation wrapper with 3 animations -->
+  <div class="login-container">
+    <h1>Login to Paste Aza Pro</h1>
     <div class="anim-wrapper">
-      <lottie-player class="active" src="https://assets10.lottiefiles.com/packages/lf20_xlmz9xwm.json" background="transparent" speed="1" loop autoplay></lottie-player>
-      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_puciaact.json" background="transparent" speed="1" loop></lottie-player>
-      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_kxsd2ytq.json" background="transparent" speed="1" loop></lottie-player>
+      <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_jcikwtux.json" background="transparent" speed="1" class="active" autoplay></lottie-player>
+      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_q7hiluze.json" background="transparent" speed="1"></lottie-player>
+      <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_ysrn2iwp.json" background="transparent" speed="1"></lottie-player>
     </div>
-
-    <h2>Login to your Paste Aza Pro</h2>
-
     <form id="login-form">
-      <input id="email" type="email" placeholder="Email" required>
-      <input id="password" type="password" placeholder="Password" required>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required>
+      </div>
       <div class="forgot-password">
         <a href="reset.html">Forgot Password?</a>
       </div>
-      <button type="submit" class="btn">Login</button>
+      <button type="submit">Login</button>
     </form>
-
-    <p class="toggle-text">Don’t have an account? <a href="signup.html">Sign Up</a></p>
+    <p class="toggle-text">Don't have an account? <a href="signup.html">Sign Up</a></p>
   </div>
 
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
   <script>
+    // Animation rotation
     const players = document.querySelectorAll(".anim-wrapper lottie-player");
     let current = 0;
 
@@ -100,24 +143,18 @@
 
     setInterval(showNext, 6000);
 
-    // Replace the fetch call in your login form with direct Supabase authentication
-    
-    // Add this script tag in the head section
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    // Then replace your login fetch code with:
-    // Login logic with SweetAlert2
+    // Login logic with Supabase
     document.getElementById("login-form").addEventListener("submit", function(e){
       e.preventDefault();
-    
+
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
-    
+
       // Initialize Supabase client
       const SUPABASE_URL = "https://clykgtzngxomhrbvyooc.supabase.co";
-      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNseWtndHpuZ3hvbWhyYnZ5b29jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0OTQ0NDEsImV4cCI6MjA3NTA3MDQ0MX0.Wd9JKT_LgfQvOVVUK9c3LbJDDHQBgid_tNvHZOIAQ-g"; // Use anon key for client-side
-      const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    
+      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNseWtndHpuZ3hvbWhyYnZ5b29jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0OTQ0NDEsImV4cCI6MjA3NTA3MDQ0MX0.Wd9JKT_LgfQvOVVUK9c3LbJDDHQBgid_tNvHZOIAQ-g";
+      const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
+
       // Show loading
       Swal.fire({
         title: 'Logging in...',
@@ -127,7 +164,7 @@
           Swal.showLoading();
         }
       });
-    
+
       // Check user credentials directly from Supabase
       supabase
         .from("users")
@@ -140,7 +177,7 @@
             Swal.fire("❌ Invalid Login", "Email or password is incorrect. Please try again.", "error");
             return;
           }
-    
+
           // Store user info in localStorage
           localStorage.setItem('user', JSON.stringify({
             id: data.id,
@@ -149,7 +186,7 @@
             role: data.role,
             isLoggedIn: true
           }));
-    
+
           // Check if user has a valid token
           return supabase
             .from("tokens")
@@ -163,15 +200,15 @@
           if (tokenError) {
             console.error("Token check error:", tokenError);
           }
-    
+
           const hasValidToken = !tokenError && tokenData && tokenData.length > 0 && 
                               (!tokenData[0].expires_at || new Date(tokenData[0].expires_at) > new Date());
-    
+
           // Store token info
           if (hasValidToken) {
             localStorage.setItem('token', JSON.stringify(tokenData[0]));
           }
-    
+
           Swal.fire({
             title: "🎉 Login Successful!",
             text: "Welcome back " + JSON.parse(localStorage.getItem('user')).firstName,
