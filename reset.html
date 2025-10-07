@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuda Clone - Reset Password</title>
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <style>
+    body {
+      margin:0;
+      font-family:'Segoe UI',Tahoma,sans-serif;
+      background:#fff;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+    }
+    .container {
+      width:100%;
+      max-width:400px;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    .anim-wrapper {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin-bottom: 15px;
+    }
+    lottie-player {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    lottie-player.active {
+      opacity: 1;
+    }
+    h2 {
+      font-size:20px;
+      margin-bottom:20px;
+      text-align:center;
+      color:#333;
+    }
+    form {
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      gap:15px;
+    }
+    input {
+      padding:14px;
+      border:1px solid #ccc;
+      border-radius:10px;
+      font-size:15px;
+      width:100%;
+    }
+    .btn {
+      background-color:#40196D;
+      color:#fff;
+      border:none;
+      padding:14px;
+      border-radius:10px;
+      font-size:16px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+    .btn:hover {background-color:#2e1250;}
+    .toggle-text {
+      margin-top:20px;
+      text-align:center;
+      font-size:14px;
+      color:#555;
+    }
+    .toggle-text a {
+      color:#40196D;
+      font-weight:bold;
+      text-decoration:none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Animation wrapper -->
+    <div class="anim-wrapper">
+      <lottie-player class="active" src="https://assets2.lottiefiles.com/packages/lf20_puciaact.json" background="transparent" speed="1" loop autoplay></lottie-player>
+      <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_xlmz9xwm.json" background="transparent" speed="1" loop></lottie-player>
+      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_kxsd2ytq.json" background="transparent" speed="1" loop></lottie-player>
+    </div>
+
+    <h2>Reset Your Password</h2>
+
+    <form id="reset-form">
+      <input id="email" type="email" placeholder="Enter your Email" required>
+      <input id="newPassword" type="password" placeholder="Enter new Password" required>
+      <button type="submit" class="btn">Reset Password</button>
+    </form>
+
+    <p class="toggle-text">Remembered? <a href="login.html">Login</a></p>
+  </div>
+
+  <script>
+    // Animation rotation
+    const players = document.querySelectorAll(".anim-wrapper lottie-player");
+    let current = 0;
+
+    function showNext() {
+      players[current].classList.remove("active");
+      if (players[current].stop) players[current].stop();
+
+      current = (current + 1) % players.length;
+
+      players[current].classList.add("active");
+      if (players[current].play) players[current].play();
+    }
+
+    setInterval(showNext, 6000);
+
+    // Reset logic
+    document.getElementById("reset-form").addEventListener("submit", function(e){
+      e.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const newPassword = document.getElementById("newPassword").value;
+
+      const storedEmail = localStorage.getItem("userEmail");
+
+      if (email === storedEmail) {
+        localStorage.setItem("userPassword", newPassword);
+        alert("Password reset successful! Redirecting to login...");
+        window.location.href = "login.html";
+      } else {
+        alert("Email not found. Please try again or sign up.");
+      }
+    });
+  </script>
+</body>
+</html>

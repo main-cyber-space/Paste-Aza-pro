@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuda Clone - Sign Up</title>
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <style>
+    body {
+      margin:0;
+      font-family:'Segoe UI',Tahoma,sans-serif;
+      background:#fff;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+    }
+    .container {
+      width:100%;
+      max-width:400px;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    .anim-wrapper {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin-bottom: 15px;
+    }
+    lottie-player {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    lottie-player.active {
+      opacity: 1;
+    }
+    h2 {
+      font-size:20px;
+      margin-bottom:20px;
+      text-align:center;
+      color:#333;
+    }
+    form {
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      gap:15px;
+    }
+    input {
+      padding:14px;
+      border:1px solid #ccc;
+      border-radius:10px;
+      font-size:15px;
+      width:100%;
+    }
+    .btn {
+      background-color:#40196D;
+      color:#fff;
+      border:none;
+      padding:14px;
+      border-radius:10px;
+      font-size:16px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+    .btn:hover {background-color:#2e1250;}
+    .toggle-text {
+      margin-top:20px;
+      text-align:center;
+      font-size:14px;
+      color:#555;
+    }
+    .toggle-text a {
+      color:#40196D;
+      font-weight:bold;
+      text-decoration:none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Animation wrapper with 3 animations -->
+    <div class="anim-wrapper">
+      <lottie-player class="active" src="https://assets10.lottiefiles.com/packages/lf20_xlmz9xwm.json" background="transparent" speed="1" loop autoplay></lottie-player>
+      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_puciaact.json" background="transparent" speed="1" loop></lottie-player>
+      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_kxsd2ytq.json" background="transparent" speed="1" loop></lottie-player>
+    </div>
+
+    <h2>Create your Paste Aza Pro Account</h2>
+
+    <form id="signup-form">
+      <input id="fullName" type="text" placeholder="Full Name" required>
+      <input id="email" type="email" placeholder="Email" required>
+      <input id="password" type="password" placeholder="Password" required>
+      <button type="submit" class="btn">Sign Up</button>
+    </form>
+
+    <script>
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const fullName = document.getElementById('fullName').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      try {
+        const response = await fetch('/api/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            firstName: fullName,  // Match the server's expected parameter name
+            email,
+            password
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          window.location.href = '/login.html';
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during signup');
+      }
+    });
+    </script>
+    <p class="toggle-text">Already have an account? <a href="login.html">Login</a></p>
+  </div>
+
+  <script>
+    // Animation rotation
+    const players = document.querySelectorAll(".anim-wrapper lottie-player");
+    let current = 0;
+
+    function showNext() {
+      players[current].classList.remove("active");
+      if (players[current].stop) players[current].stop();
+
+      current = (current + 1) % players.length;
+
+      players[current].classList.add("active");
+      if (players[current].play) players[current].play();
+    }
+
+    setInterval(showNext, 6000);
+
+    // Signup logic
+    document.getElementById("signup-form").addEventListener("submit", function(e){
+      e.preventDefault();
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      // Send data to server
+      fetch('/api/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ fullName, email, password })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert("Signup successful! Redirecting to login...");
+          window.location.href = "login.html";
+        } else {
+          alert("Signup failed: " + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert("An error occurred during signup. Please try again.");
+      });
+    });
+  </script>
+</body>
+</html>

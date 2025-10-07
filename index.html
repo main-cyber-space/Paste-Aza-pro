@@ -5,74 +5,139 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Paste Aza Pro</title>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    :root { --bg-light:#f5f5f5; --bg-dark:#121212; --text-light:#333; --text-dark:#fff; --card-light:#fff; --card-dark:#1e1e1e; --primary:#1a73e8; }
+    :root { --bg-light:#f5f5f5; --bg-dark:#121212; --text-light:#333; --text-dark:#fff; --card-light:#fff; --card-dark:#1e1e1e; --primary:#6a1b9a; }
     body{margin:0;font-family:Arial, sans-serif;background:var(--bg-light);color:var(--text-light);transition:0.3s;}
-    body.dark{background:var(--bg-dark);color:var(--text-dark);}
-    .container{padding:20px;}
+    h1{margin:0;padding:20px 0;text-align:center;color:#fff;background:var(--primary);font-size:26px;}
     h2{text-align:center;margin-bottom:20px;color:var(--primary);}
-    .banks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;}
+    .button-row{display:flex;justify-content:center;gap:15px;background:#eee;padding:15px;}
+    .button-row .small-btn{background:var(--primary);border:none;color:#fff;padding:10px 15px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;transition:0.2s;}
+    .button-row .small-btn i{font-size:16px;}
+    .button-row .small-btn:hover{opacity:0.85;}
+    .banks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;margin-top:30px;}
     .bank-card{background:var(--card-light);padding:25px 15px;text-align:center;border-radius:12px;box-shadow:0 4px 6px rgba(0,0,0,0.1);cursor:pointer;transition:0.2s;}
     body.dark .bank-card{background:var(--card-dark);box-shadow:0 4px 6px rgba(255,255,255,0.05);}
     .bank-card:hover{transform:translateY(-4px);}
     .bank-card i{font-size:28px;color:var(--primary);margin-bottom:8px;}
     .bank-card h3{margin:0;font-size:15px;}
-    .actions{text-align:center;margin-top:30px;}
-    .actions button,.actions a{margin:10px;padding:10px 15px;border:none;border-radius:8px;cursor:pointer;font-size:14px;background:var(--primary);color:#fff;text-decoration:none;display:inline-block;}
-    .header-row{display:flex;align-items:center;justify-content:space-between;background:var(--primary);color:#fff;padding:15px;font-size:20px;font-weight:bold;}
-    .header-row .title{flex:1;text-align:center;}
-    .header-row .right-controls{display:flex;gap:8px;align-items:center;}
-    .small-btn{background:transparent;border:none;color:#fff;padding:8px;border-radius:20px;cursor:pointer;font-size:16px;}
-    #lottieBlock{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff;font-size:22px;font-weight:bold;}
-    #lottie{width:250px;height:250px;margin-bottom:20px;}
-    .pricing{margin-top:40px;text-align:center;font-size:16px;font-weight:bold;animation: blink 2s infinite;}
-    @keyframes blink{0%{color:#1a73e8;}50%{color:#e91e63;}100%{color:#1a73e8;}}
+    .channel-link{margin:40px 0;text-align:center;}
+    .channel-link a{color:var(--primary);font-weight:bold;text-decoration:none;font-size:16px;display:inline-flex;align-items:center;gap:8px;}
+    .channel-link a:hover{text-decoration:underline;}
+    .subscription-banner {
+      background: #4caf50;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
 
-  <div id="lottieBlock" style="display:none;">
-    <div id="lottie"></div>
-    <div>419 Cheating 😂</div>
+  <!-- Main Header -->
+  <h1>Paste Aza Pro</h1>
+
+  <!-- Subscription Banner -->
+  <div class="subscription-banner" id="subscriptionBanner">
+    Checking subscription status...
   </div>
 
-  <div class="header-row">
-    <div class="title">Paste Aza Pro</div>
-    <div class="right-controls">
-      <button id="statusBtn" class="small-btn" title="View Status"><i class="fa-solid fa-id-badge"></i></button>
-      <button class="small-btn" id="themeToggle" title="Toggle theme"><i class="fa-solid fa-moon"></i></button>
-    </div>
+  <!-- Button Row -->
+  <div class="button-row">
+    <button id="buyTokenBtn" class="small-btn"><i class="fa-solid fa-cart-shopping"></i> Buy Token</button>
+    <button id="developerBtn" class="small-btn"><i class="fa-solid fa-comment-dots"></i> Developer</button>
+    <button id="profileBtn" class="small-btn"><i class="fa-solid fa-user"></i> Profile</button>
   </div>
 
+  <!-- Content -->
   <div class="container">
     <h2>Choose a Bank to Generate Receipt</h2>
     <div class="banks">
       <div class="bank-card" data-page="palmpayform.html"><i class="fa-solid fa-building-columns"></i><h3>PalmPay</h3></div>
       <div class="bank-card" data-page="opayform.html"><i class="fa-solid fa-building-columns"></i><h3>Opay</h3></div>
       <div class="bank-card" data-page="receiptform.html"><i class="fa-solid fa-building-columns"></i><h3>Kuda</h3></div>
-      <div class="bank-card" id="telegramCard"><i class="fa-brands fa-telegram bounce"></i><h3>Channel</h3></div>
     </div>
 
-    <div class="pricing">🚀 Token Plans: <br>One Week → ₦3,000 <br>One Month → ₦6,500 <br>Unlimited → ₦12,000</div>
-
-    <div class="actions">
-      <button onclick="copyUID()">📋 Copy UID</button>
-      <a href="developer.html">💬 Contact Developer</a>
-      <a id="statusLink" href="status.html" style="background:green;">🔍 View Status</a>
-      <a id="buyTokenBtn" style="background:orange;cursor:pointer;">💳 Buy Token</a>
+    <!-- Telegram channel link -->
+    <div class="channel-link">
+      <a href="https://t.me/web404space" target="_blank">
+        <i class="fa-brands fa-telegram"></i> Join Our Channel
+      </a>
     </div>
   </div>
 
 <script>
-/* --- Supabase init --- */
-const SUPABASE_URL = "https://zwmditpxtvqwugsdmulr.supabase.co";
-const SUPABASE_ANON_KEY = "PASTE-YOUR-ANON-PUBLIC-KEY-HERE"; 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* --- Authentication check --- */
+fetch('/api/check-auth')
+  .then(response => response.json())
+  .then(data => {
+    if (!data.isLoggedIn) {
+      window.location.href = 'login.html';
+    }
+  })
+  .catch(error => console.error('Auth check error:', error));
 
-/* --- anti-inspect --- */
+/* --- Check token status --- */
+fetch('/api/user/token')
+  .then(response => response.json())
+  .then(data => {
+    const banner = document.getElementById('subscriptionBanner');
+    
+    if (data.success && data.hasToken) {
+      // User has a valid token
+      const planName = data.plan === 'week' ? '1 Week' : 
+                       data.plan === 'month' ? '1 Month' : 
+                       data.plan === 'lifetime' ? 'Lifetime' : data.plan;
+      
+      if (data.expiresAt) {
+        const expiryDate = new Date(data.expiresAt);
+        const now = new Date();
+        const daysLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
+        
+        banner.style.background = '#4caf50';
+        banner.innerHTML = `Active Subscription: ${planName} Plan - ${daysLeft} days remaining`;
+      } else {
+        banner.style.background = '#4caf50';
+        banner.innerHTML = `Active Subscription: ${planName} Plan - Never Expires`;
+      }
+    } else {
+      // No valid token
+      banner.style.background = '#f44336';
+      banner.innerHTML = 'Your account is not activated. Please purchase a token to access all features.';
+      
+      // Disable bank cards
+      document.querySelectorAll('.bank-card').forEach(card => {
+        card.style.opacity = '0.5';
+        card.style.cursor = 'not-allowed';
+        card.removeAttribute('data-page');
+        
+        card.addEventListener('click', e => {
+          e.preventDefault();
+          Swal.fire({
+            title: 'Activation Required',
+            text: 'You need to activate your account with a token to access this feature',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Activate Now',
+            cancelButtonText: 'Later',
+            confirmButtonColor: '#6a1b9a'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = 'activate.html';
+            }
+          });
+        });
+      });
+    }
+  })
+  .catch(error => {
+    console.error('Error checking token status:', error);
+    document.getElementById('subscriptionBanner').innerHTML = 'Could not verify subscription status';
+  });
+
+/* --- disable inspect --- */
 document.onkeydown = function(e){
   if(e.keyCode==123 || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) || (e.ctrlKey && e.key.toUpperCase()=='U')) {
     return false;
@@ -80,173 +145,70 @@ document.onkeydown = function(e){
 };
 document.addEventListener('contextmenu', e => e.preventDefault());
 
-/* --- platform detect --- */
-function detectPlatform(){ const ua=navigator.userAgent.toLowerCase(); if(/android/i.test(ua)) return "android"; if(/iphone|ipad|ipod/i.test(ua)) return "ios"; if(/win/i.test(ua)) return "windows"; return "other"; }
-function blockWindows(){ document.getElementById("lottieBlock").style.display="flex"; lottie.loadAnimation({container:document.getElementById("lottie"),renderer:"svg",loop:true,autoplay:true,path:"https://assets1.lottiefiles.com/packages/lf20_j1adxtyb.json"}); document.body.style.overflow="hidden"; }
-const platform = detectPlatform(); if (platform==="windows" || platform==="other") blockWindows();
-
-/* --- Telegram popup every 30 mins --- */
-function showTelegramPopup(){ Swal.fire({icon:'warning',title:'Join Our Telegram Channel',html:'<p>Stay updated and purchase your token easily.</p><a href="https://t.me/web404space" target="_blank" style="color:#1a73e8;font-weight:bold;">👉 Click Here to Join</a>',confirmButtonText:'OK'}); }
-window.onload = function(){
-  const lastShown = localStorage.getItem('lastTelegramPopup');
-  const now = Date.now();
-  if (!lastShown || now - lastShown > 30*60*1000) { showTelegramPopup(); localStorage.setItem('lastTelegramPopup', now); }
-};
-
-/* --- Buy token via WhatsApp --- */
+/* --- Buy token --- */
 document.getElementById('buyTokenBtn').onclick = function(){
-  const phone = "2349020388011";
-  const message = encodeURIComponent("Hello, I want to buy a token for Paste Aza Pro. My UID: " + getOrCreateUID());
-  window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+  Swal.fire('Buy Token','Redirecting to WhatsApp seller...','info');
+  window.open("https://wa.me/2349020388011?text=Hello, I want to buy a token for Paste Aza Pro","_blank");
 };
 
-/* --- UID --- */
-function getOrCreateUID(){
-  let uid = localStorage.getItem('userUID');
-  if(!uid){ uid = 'UID-' + Math.random().toString(36).substring(2,11) + '-' + Date.now(); localStorage.setItem('userUID', uid); }
-  return uid;
-}
-function copyUID(){ const uid = getOrCreateUID(); navigator.clipboard.writeText(uid).then(()=> { Swal.fire({icon:'success', title:'Copied UID', text: uid, timer:1600, showConfirmButton:false}); }); }
+/* --- Developer --- */
+document.getElementById('developerBtn').onclick = function(){
+  window.location.href = "developer.html";
+};
+
+/* --- Profile --- */
+document.getElementById('profileBtn').onclick = function(){
+  window.location.href = "profile.html";
+};
 
 /* --- Bank card click --- */
 document.querySelectorAll('.bank-card[data-page]').forEach(card=>{
-  card.addEventListener('click', async e=>{
+  card.addEventListener('click', e=>{
     const page = card.dataset.page;
-    const check = checkStoredLicense();
-    if(check.valid){
+    if (page) {
       window.location.href = page;
-      return;
     }
-    await showActivationPopup(page);
   });
 });
 
-/* --- checkStoredLicense --- */
-function checkStoredLicense(){
-  const token = localStorage.getItem('licenseToken');
-  const start = localStorage.getItem('licenseStart');
-  const plan = localStorage.getItem('licensePlan');
-  if(!token || !start || !plan) return { valid:false };
-
-  const startDate = new Date(parseInt(start,10));
-  const now = new Date();
-
-  const activationTime = new Date(startDate.getTime() + (5 * 60 * 1000));
-  if(now < activationTime){
-    return { valid:false, waiting:true, remaining: activationTime - now };
-  }
-
-  let days;
-  if(plan === "week") days = 7;
-  else if(plan === "month") days = 30;
-  else if(plan === "unlimited") days = 365;
-  else return { valid:false };
-
-  const expiry = new Date(startDate.getTime() + days * 24 * 60 * 60 * 1000);
-  if(now > expiry) return { valid:false, expired:true };
-
-  return { valid:true };
-}
-
-/* --- Supabase validation --- */
-async function validateTokenWithSupabase(token, uid, plan) {
-  const { data, error } = await supabase
-    .from('tokens')
-    .select('*')
-    .eq('token', token)
-    .eq('plan', plan)
-    .eq('valid', true)
-    .maybeSingle();
-
-  if (error) {
-    console.error(error);
-    return { valid: false };
-  }
-
-  if (!data) {
-    return { valid: false };
-  }
-
-  if (data.used_by && data.used_by !== uid) {
-    return { valid: false };
-  }
-
-  const activationStart = Date.now();
-  await supabase
-    .from('tokens')
-    .update({ used_by: uid, activation_start: activationStart })
-    .eq('token', token);
-
-  return { valid: true, activationStart, plan: data.plan };
-}
-
-/* --- Activation popup --- */
-async function showActivationPopup(redirectPage){
-  const uid = getOrCreateUID();
-
-  const { value: formData } = await Swal.fire({
-    title: 'Enter License Token',
-    html: `
-      <input id="swToken" class="swal2-input" placeholder="Paste token here">
-      <select id="swPlan" class="swal2-select" style="margin-top:10px;width:80%;">
-        <option value="week">One Week</option>
-        <option value="month">One Month</option>
-        <option value="unlimited">Unlimited</option>
-      </select>
-      <div style="margin-top:10px"><b>Your UID:</b><br>${uid}</div>
-    `,
-    confirmButtonText: 'Activate',
-    showCancelButton: true,
-    preConfirm: () => {
-      const token = document.getElementById('swToken').value && document.getElementById('swToken').value.trim();
-      const plan = document.getElementById('swPlan').value;
-      if(!token) { Swal.showValidationMessage('Please enter a token.'); return false; }
-      return { token, plan };
+/* --- Additional anti-inspect protection --- */
+(function() {
+  function blockDevTools() {
+    if(window.devtools.isOpen) {
+      window.location.href = 'blocked.html';
     }
-  });
-
-  if(!formData) return;
-
-  try {
-    const result = await validateTokenWithSupabase(formData.token, uid, formData.plan);
-
-    if (!result.valid) {
-      Swal.fire('Invalid token','The token you entered is invalid. Please purchase a valid one.','error');
-      return;
+  }
+  
+  // Create devtools detector
+  const devtools = {
+    isOpen: false,
+    orientation: undefined
+  };
+  
+  // Add detector
+  const threshold = 160;
+  const emitEvent = (isOpen, orientation) => {
+    window.devtools = { isOpen, orientation };
+  };
+  
+  // Check width/height differential
+  setInterval(() => {
+    const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+    const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+    const orientation = widthThreshold ? 'vertical' : 'horizontal';
+    
+    if(widthThreshold || heightThreshold) {
+      if(!devtools.isOpen || devtools.orientation !== orientation) {
+        emitEvent(true, orientation);
+        blockDevTools();
+      }
+    } else {
+      if(devtools.isOpen) {
+        emitEvent(false, null);
+      }
     }
-
-    localStorage.setItem('licenseToken', formData.token);
-    localStorage.setItem('licenseStart', String(result.activationStart));
-    localStorage.setItem('licensePlan', result.plan);
-
-    Swal.fire('Token accepted','Token saved. It will be active in 5 minutes.','success');
-  } catch(err){
-    console.error(err);
-    Swal.fire('Error','Could not validate token. Please try again later.','error');
-  }
-}
-
-/* --- Status button --- */
-document.getElementById('statusBtn').onclick = function(){
-  const check = checkStoredLicense();
-  if(check.valid){
-    Swal.fire('✅ Active','Your token is valid and active.','success');
-  } else if(check.waiting){
-    const mins = Math.floor(check.remaining / 60000);
-    const secs = Math.floor((check.remaining % 60000) / 1000);
-    Swal.fire('⏳ Waiting','Token will activate in ' + mins + 'm ' + secs + 's.','info');
-  } else {
-    Swal.fire('❌ Inactive','No valid token found or token expired.','error');
-  }
-};
-
-/* --- theme toggle --- */
-const themeBtn = document.getElementById('themeToggle');
-function setTheme(){ if(localStorage.getItem('theme')==='dark'){ document.body.classList.add('dark'); themeBtn.innerHTML='<i class="fa-solid fa-sun"></i>'; } else { document.body.classList.remove('dark'); themeBtn.innerHTML='<i class="fa-solid fa-moon"></i>'; } }
-setTheme();
-themeBtn.onclick = ()=>{ document.body.classList.toggle('dark'); localStorage.setItem('theme', document.body.classList.contains('dark')?'dark':'light'); setTheme(); };
-
-getOrCreateUID();
+  }, 500);
+})();
 </script>
 </body>
 </html>

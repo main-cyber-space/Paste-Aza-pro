@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile - Paste Aza Pro</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root { 
+      --primary:#6a1b9a; /* Dark purple */
+      --bg:#f9f9f9;
+      --text:#222;
+    }
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    h1{
+      margin:0;
+      padding:15px;
+      text-align:center;
+      color:#fff;
+      background:var(--primary);
+      font-size:22px;
+    }
+    .profile-container{
+      max-width:380px;
+      margin:30px auto;
+      padding:15px;
+    }
+    .profile-item{
+      margin:12px 0;
+      padding:10px;
+      border-bottom:1px solid #ccc;
+    }
+    .profile-item label{
+      font-weight:bold;
+      color:var(--primary);
+      display:block;
+      margin-bottom:4px;
+    }
+    .profile-item span{
+      font-size:15px;
+      display:block;
+    }
+    .token-details {
+      background: #f0f0f0;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    .token-details h3 {
+      margin-top: 0;
+      color: var(--primary);
+    }
+    .token-details p {
+      margin: 5px 0;
+    }
+    .countdown {
+      font-weight: bold;
+      color: #e91e63;
+    }
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .button-row button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: bold;
+    }
+    .home-btn {
+      background: #2196f3;
+      color: #fff;
+    }
+    .logout-btn{
+      background:var(--primary);
+      color:#fff;
+    }
+    .button-row button:hover{
+      opacity:0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Page Header -->
+  <div style="position: relative; background: var(--primary);">
+    <a href="index.html" style="position: absolute; left: 15px; top: 15px; color: white; font-size: 20px;">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+    <h1>My Profile</h1>
+  </div>
+
+  <!-- Profile Info -->
+  <div class="profile-container">
+    <div class="profile-item">
+      <label><i class="fa-solid fa-user"></i> Full Name</label>
+      <span id="fullName">Loading...</span>
+    </div>
+
+    <div class="profile-item">
+      <label><i class="fa-solid fa-envelope"></i> Email</label>
+      <span id="email">Loading...</span>
+    </div>
+
+    <div class="profile-item">
+      <label><i class="fa-solid fa-id-card"></i> UID</label>
+      <span id="uid">Loading...</span>
+    </div>
+
+    <!-- Token Information -->
+    <div class="token-details" id="tokenDetails">
+      <h3>Subscription Status</h3>
+      <div id="tokenStatus">
+        <p>Checking subscription status...</p>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button class="home-btn" id="homeBtn"><i class="fa-solid fa-home"></i> Home</button>
+      <button class="logout-btn" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </div>
+
+<script>
+/* --- UID generator --- */
+function getOrCreateUID(){
+  let uid = localStorage.getItem('userUID');
+  if(!uid){ 
+    uid = 'UID-' + Math.random().toString(36).substring(2,11) + '-' + Date.now();
+    localStorage.setItem('userUID', uid); 
+  }
+  return uid;
+}
+
+/* Fetch user data from server */
+fetch('/api/check-auth')
+  .then(response => response.json())
+  .then(data => {
+    if (data.isLoggedIn && data.user) {
+      document.getElementById("fullName").innerText = data.user.firstName || "Not available";
+      document.getElementById("email").innerText = data.user.email || "Not available";
+      document.getElementById("uid").innerText = getOrCreateUID();
+      
+      // Fetch token information
+      fetchTokenInfo();
+    } else {
+      window.location.href = 'login.html';
+    }
+  })
+  .catch(error => {
+    console.error('Error fetching user data:', error);
+    document.getElementById("fullName").innerText = "Error loading data";
+    document.getElementById("email").innerText = "Error loading data";
+  });
+
+/* Fetch token information */
+function fetchTokenInfo() {
+  fetch('/api/user/token')
+    .then(response => response.json())
+    .then(data => {
+      const tokenStatusDiv = document.getElementById('tokenStatus');
+      
+      if (data.success && data.hasToken) {
+        // User has a valid token
+        let html = `<p><strong>Status:</strong> <span style="color:green">✅ Active</span></p>`;
+        html += `<p><strong>Plan:</strong> ${formatPlan(data.plan)}</p>`;
+        
+        if (data.expiresAt) {
+          const expiryDate = new Date(data.expiresAt);
+          html += `<p><strong>Expires:</strong> ${formatDate(expiryDate)}</p>`;
+          
+          // Add countdown
+          const countdownId = 'countdown';
+          html += `<p><strong>Time Remaining:</strong> <span id="${countdownId}" class="countdown">Calculating...</span></p>`;
+          
+          tokenStatusDiv.innerHTML = html;
+          
+          // Start countdown
+          updateCountdown(expiryDate, countdownId);
+          setInterval(() => updateCountdown(expiryDate, countdownId), 1000);
+        } else {
+          html += `<p><strong>Expires:</strong> Never (Lifetime)</p>`;
+          tokenStatusDiv.innerHTML = html;
+        }
+      } else if (data.expired) {
+        // Token expired
+        tokenStatusDiv.innerHTML = `
+          <p><strong>Status:</strong> <span style="color:red">❌ Expired</span></p>
+          <p>Your subscription has expired. Please purchase a new token.</p>
+          <button id="buyNewTokenBtn" style="background:#e91e63;color:#fff;border:none;padding:10px;border-radius:4px;margin-top:10px;cursor:pointer;">
+            Buy New Token
+          </button>
+        `;
+        
+        document.getElementById('buyNewTokenBtn').addEventListener('click', function() {
+          window.location.href = 'activate.html';
+        });
+      } else {
+        // No token
+        tokenStatusDiv.innerHTML = `
+          <p><strong>Status:</strong> <span style="color:red">❌ Inactive</span></p>
+          <p>You don't have an active subscription. Please activate your account.</p>
+          <button id="activateBtn" style="background:#4caf50;color:#fff;border:none;padding:10px;border-radius:4px;margin-top:10px;cursor:pointer;">
+            Activate Account
+          </button>
+        `;
+        
+        document.getElementById('activateBtn').addEventListener('click', function() {
+          window.location.href = 'activate.html';
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching token info:', error);
+      document.getElementById('tokenStatus').innerHTML = `
+        <p><strong>Status:</strong> <span style="color:orange">⚠️ Unknown</span></p>
+        <p>Could not retrieve subscription information.</p>
+      `;
+    });
+}
+
+/* Format plan name */
+function formatPlan(plan) {
+  if (!plan) return 'Unknown';
+  
+  switch(plan) {
+    case 'week': return '1 Week';
+    case 'month': return '1 Month';
+    case 'lifetime': return 'Lifetime';
+    default: return plan.charAt(0).toUpperCase() + plan.slice(1);
+  }
+}
+
+/* Format date */
+function formatDate(date) {
+  return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+}
+
+/* Update countdown */
+function updateCountdown(expiryDate, elementId) {
+  const now = new Date();
+  const timeLeft = expiryDate - now;
+  
+  if (timeLeft <= 0) {
+    document.getElementById(elementId).innerHTML = 'Expired';
+    location.reload(); // Refresh to show expired status
+    return;
+  }
+  
+  const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+  
+  document.getElementById(elementId).innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+}
+
+/* Home button */
+document.getElementById("homeBtn").onclick = function(){
+  window.location.href = "index.html";
+};
+
+/* Logout */
+document.getElementById("logoutBtn").onclick = function(){
+  Swal.fire({
+    title: 'Logout',
+    text: 'Are you sure you want to logout?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Logout',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#6a1b9a'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      fetch('/api/logout')
+        .then(() => {
+          window.location.href = "login.html";
+        })
+        .catch(err => {
+          console.error('Logout error:', err);
+          window.location.href = "login.html";
+        });
+    }
+  });
+};
+
+/* --- disable inspect --- */
+document.onkeydown = function(e){
+  if(e.keyCode==123 || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) || (e.ctrlKey && e.key.toUpperCase()=='U')) {
+    return false;
+  }
+};
+document.addEventListener('contextmenu', e => e.preventDefault());
+</script>
+</body>
+</html>

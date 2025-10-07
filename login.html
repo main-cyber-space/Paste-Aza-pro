@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuda Clone - Login</title>
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      margin:0;
+      font-family:'Segoe UI',Tahoma,sans-serif;
+      background:#fff;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+    }
+    .container {
+      width:100%;
+      max-width:400px;
+      padding:20px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    .anim-wrapper {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin-bottom: 15px;
+    }
+    lottie-player {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    lottie-player.active {
+      opacity: 1;
+    }
+    h2 {font-size:20px;margin-bottom:20px;text-align:center;color:#333;}
+    form {width:100%;display:flex;flex-direction:column;gap:15px;}
+    input {padding:14px;border:1px solid #ccc;border-radius:10px;font-size:15px;width:100%;}
+    .btn {background-color:#40196D;color:#fff;border:none;padding:14px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;}
+    .btn:hover {background-color:#2e1250;}
+    .toggle-text {margin-top:20px;text-align:center;font-size:14px;color:#555;}
+    .toggle-text a {color:#40196D;font-weight:bold;text-decoration:none;}
+    .forgot-password {
+      margin-top:-10px;
+      text-align:right;
+      width:100%;
+      font-size:13px;
+    }
+    .forgot-password a {
+      color:#40196D;
+      text-decoration:none;
+      font-weight:bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Animation wrapper with 3 animations -->
+    <div class="anim-wrapper">
+      <lottie-player class="active" src="https://assets10.lottiefiles.com/packages/lf20_xlmz9xwm.json" background="transparent" speed="1" loop autoplay></lottie-player>
+      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_puciaact.json" background="transparent" speed="1" loop></lottie-player>
+      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_kxsd2ytq.json" background="transparent" speed="1" loop></lottie-player>
+    </div>
+
+    <h2>Login to your Paste Aza Pro</h2>
+
+    <form id="login-form">
+      <input id="email" type="email" placeholder="Email" required>
+      <input id="password" type="password" placeholder="Password" required>
+      <div class="forgot-password">
+        <a href="reset.html">Forgot Password?</a>
+      </div>
+      <button type="submit" class="btn">Login</button>
+    </form>
+
+    <p class="toggle-text">Don’t have an account? <a href="signup.html">Sign Up</a></p>
+  </div>
+
+  <script>
+    const players = document.querySelectorAll(".anim-wrapper lottie-player");
+    let current = 0;
+
+    function showNext() {
+      players[current].classList.remove("active");
+      if (players[current].stop) players[current].stop();
+
+      current = (current + 1) % players.length;
+
+      players[current].classList.add("active");
+      if (players[current].play) players[current].play();
+    }
+
+    setInterval(showNext, 6000);
+
+    // Login logic with SweetAlert2
+    document.getElementById("login-form").addEventListener("submit", function(e){
+      e.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      // Send login request to server
+      fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          Swal.fire({
+            title: "🎉 Login Successful!",
+            text: "Welcome back " + (data.user && data.user.firstName ? data.user.firstName : ""),
+            icon: "success",
+            confirmButtonText: "Continue to Dashboard",
+            confirmButtonColor: "#40196D"
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Check if there's a redirect URL from the server
+              if (data.redirect) {
+                window.location.href = data.redirect;
+              } else {
+                window.location.href = "index.html";
+              }
+            }
+          });
+        } else {
+          Swal.fire("❌ Invalid Login", data.message || "Email or password is incorrect. Please try again.", "error");
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        Swal.fire("❌ Server Error", "An error occurred during login. Please try again.", "error");
+      });
+    });
+  </script>
+</body>
+</html>
